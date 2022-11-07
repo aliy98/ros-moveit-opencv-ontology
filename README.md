@@ -3,7 +3,7 @@
 ## Introduction
 This package is an experiment to use a topogical map ontology for controling a robot in ROS through aRMOR service. The ontology consists of an indoor 
 environment with multiple rooms and a mobile robot. You can get to know more about the detatils of the source code using the 
-[documentation](https://aliy98.github.io/ontological-robot-comtrol/) provided for this rospackage.
+[documentation](https://aliy98.github.io/ontological-robot-control/) provided for this rospackage.
 
 <p align="center">
 <img src="https://github.com/aliy98/ontological-robot-control/blob/master/docs/diagrams/topological_map.png" width="300" title="topological map">
