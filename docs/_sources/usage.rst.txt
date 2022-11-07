@@ -33,7 +33,7 @@ In order to initialize the software architucture along with the finite state mac
 
    $ source devel/setup.bash
    $ roslaunch ontological_robot_control topological_map.launch
-
+   
 Here is the final result of launching this package:
 
 .. image:: diagrams/result.gif
