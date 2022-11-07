@@ -67,7 +67,7 @@ The ``controller`` node implements an action server named ``motion/controller``.
 
 Given the plan and the current robot position, this component iterates for each planned ``via_point`` and 
 waits to simulate the time spent moving the robot to that location. The waiting time is computed using the 
-roobot speed and the eucledian distance between the points. Each time a ``via_point`` is reached the 
+robot speed and the eucledian distance between the points. Each time a ``via_point`` is reached the 
 ``state/set_pose`` service is invoked, and a ``feedback`` is provided. When the last ``via_point`` is reached, 
 the action service provides a result by propagating the current robot position, which has been already updated 
 through the ``state/set_pose`` service. Morever in each movement step, the robot battery level is read by the
