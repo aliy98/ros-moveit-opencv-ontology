@@ -79,7 +79,12 @@
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h2>
 <p>This package is based on <a class="reference external" href="https://github.com/EmaroLab/armor">aRMOR</a>, it has to be installed as it is described
 in the provided link as a pre-condition for running this package.</p>
-<p>Here is the instruction for installing the package:</p>
+<p>It is also depended on <a class="reference external" href="http://wiki.ros.org/smach">smach</a>, it can be installed using the following commands:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo apt-get install ros-&lt;distro&gt;-executive-smach*
+<span class="gp">$ </span>sudo apt-get install ros-&lt;distro&gt;-smach-viewer
+</pre></div>
+</div>
+<p>Once the dependencies are met, the package can be installed as it follows:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>mkdir -p catkin_ws/src
 <span class="gp">$ </span><span class="nb">cd</span> catkin_ws/src
 <span class="gp">$ </span>git clone https://github.com/aliy98/ontological_robot_control

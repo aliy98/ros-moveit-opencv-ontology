@@ -4,9 +4,16 @@ Usage
 Installation
 ------------
 This package is based on `aRMOR <https://github.com/EmaroLab/armor>`_, it has to be installed as it is described
-in the provided link as a pre-condition for running this package.
+in the provided link as a pre-condition for running this package. 
 
-Here is the instruction for installing the package:
+It is also depended on `smach <http://wiki.ros.org/smach>`_, it can be installed using the following commands:
+
+.. code-block:: console
+
+   $ sudo apt-get install ros-<distro>-executive-smach*
+   $ sudo apt-get install ros-<distro>-smach-viewer
+
+Once the dependencies are met, the package can be installed as it follows:
 
 .. code-block:: console
 
