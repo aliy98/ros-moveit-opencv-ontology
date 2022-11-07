@@ -1,13 +1,36 @@
 #!/usr/bin/env python
+"""
+.. module:: topological_map
+    :platform: Unix
+    :synopsis: the topological_map python script in ontological_robot_control package
+
+.. moduleauthor:: Ali Yousefi <aliyousef98@outlook.com>
+
+Uses Service:
+    /state/get_battery_level
+    /state/get_pose
+
+Uses helper script:
+    /utilities/armor_api/armor_client.py
+
+Defines the topological map using the ``armor_client.py`` helper script methods and the
+ontology file ``topological_map.owl``, which is not complete (only contatins class definitions)
+"""
 import rospy
 from os.path import dirname, realpath
-from armor_api.armor_client import ArmorClient
-from ontological_robot_control.msg import Point
-from ontological_robot_control.srv import GetPose, GetBatteryLevel
 from ontological_robot_control import architecture_name_mapper as anm
-
+from ontological_robot_control.srv import GetPose, GetBatteryLevel
+from ontological_robot_control.msg import Point
+from armor_api.armor_client import ArmorClient
 
 class TopologicalMap:
+    """
+        Class for implemnting the topological map. When an instance is taken from this class,
+        it loads the ontology file using ``armor_client`` loading method and tries to complete it by 
+        adding rooms, doors and robot individuals, disjointing them, predefining the last visit 
+        times and placing the robot to room "E" by calling the corresponding functions which use
+        ``armor_client`` methods.
+    """
     def __init__(self, log_tag, init_time):
         self.log_tag = log_tag
         self.init_time = init_time
@@ -24,6 +47,10 @@ class TopologicalMap:
         self.add_robot()
 
     def add_individuals_to_classes(self):
+        """
+        Adds rooms, doors and robot in to the topological map using ``armor_client``
+        add individual to class method and finaly syncs the reasoner
+        """
         # Add indiviuals to class --> ROOM
         self.client.manipulation.add_ind_to_class("E", "ROOM")
         self.client.manipulation.add_ind_to_class("C1", "ROOM")
@@ -49,11 +76,19 @@ class TopologicalMap:
         self.client.utils.sync_buffered_reasoner()   
 
     def disjoint_individuals(self):
+        """
+        Disjoints every individual in each class using ``armor_client`` disjoint 
+        individuals of class method and finally syncs the reasoner
+        """
         self.client.manipulation.disj_inds_of_class("ROOM")
         self.client.manipulation.disj_inds_of_class("DOOR")
         self.client.utils.sync_buffered_reasoner()
 
     def assign_doors_to_rooms(self):
+        """
+        Assigns the doors to the rooms using ``armor_client`` add object to individual 
+        method and finally syncs the reasoner
+        """
         self.client.manipulation.add_objectprop_to_ind("hasDoor", "R1", "D1")
         self.client.manipulation.add_objectprop_to_ind("hasDoor", "R2", "D2")
         self.client.manipulation.add_objectprop_to_ind("hasDoor", "R3", "D3")
@@ -72,6 +107,10 @@ class TopologicalMap:
         self.client.utils.sync_buffered_reasoner()
 
     def add_last_visit_times(self):
+        """
+        Defines the initial last visit times using ``armor_client`` add data to individual 
+        method and finally syncs the reasoner
+        """
         self.client.manipulation.add_dataprop_to_ind("visitedAt", "R1", "Int", str(self.init_time.secs - 35))
         self.client.manipulation.add_dataprop_to_ind("visitedAt", "R2", "Int", str(self.init_time.secs - 40))
         self.client.manipulation.add_dataprop_to_ind("visitedAt", "R3", "Int", str(self.init_time.secs - 25))
@@ -82,6 +121,11 @@ class TopologicalMap:
         self.client.utils.sync_buffered_reasoner()
 
     def add_robot(self):
+        """
+        Places the robot in room "E" and sets its initial time instance and battery level
+        and defines its urgency threshold using ``armor_client`` add data  and object to individual 
+        methods and finally syncs the reasoner
+        """ 
         self.client.manipulation.add_dataprop_to_ind("now", "Robot", "Int", str(self.init_time.secs))
         self.client.utils.sync_buffered_reasoner()  
         self.client.manipulation.add_objectprop_to_ind("isIn", "Robot", self.get_location())
@@ -92,20 +136,36 @@ class TopologicalMap:
         self.client.utils.sync_buffered_reasoner()       
 
     def cut_dataprop(self, data_prop):
-        """ Very simple function that cut the data prop from a string received  from armor."""
+        """ 
+        Cuts the data prop from a string received from armor.
+
+        Args:
+            data_prop(string)
+        """
         start = 0
         end = data_prop.rfind('^') - 2
         data_prop = data_prop[(start+1) : end]
         return data_prop
 
     def cut_dataprop_list(self, data_prop_list):
-        """ Very simple function that cut the data prop from a list of strings received  from armor."""
+        """ 
+        Cuts the data prop from a list of strings received from armor.
+        
+        Args:
+            data_prop_list(string[])
+        """
         for i in range(len(data_prop_list)):
             data_prop_list[i] = self.cut_dataprop(data_prop_list[i])
         return data_prop_list
 
-    # Retrieve the current robot battery level by the `state/battery_level` server of the `robot-state` node.
     def get_battery_level_client(self):
+        """
+        Retrieve the current robot battery level by the ``state/battery_level`` server of the 
+        ``robot-state`` node.
+
+        Returns:
+            battery_level(int)
+        """
         # Eventually, wait for the server to be initialised.
         rospy.wait_for_service(anm.SERVER_GET_BATTERY_LEVEL)
         try:
@@ -121,8 +181,14 @@ class TopologicalMap:
             log_msg = f'Server cannot get current robot battery level: {e}'
             rospy.logerr(anm.tag_log(log_msg, self.log_tag))
 
-    # Retrieve the current robot pose by the `state/get_pose` server of the `robot-state` node.
     def get_pose_client(self):
+        """
+        Retrieve the current robot pose by the ``state/get_pose`` server of the 
+        ``robot-state`` node.
+
+        Returns:
+            pose(Point)
+        """
         # Eventually, wait for the server to be initialised.
         rospy.wait_for_service(anm.SERVER_GET_POSE)
         try:
@@ -138,8 +204,15 @@ class TopologicalMap:
             log_msg = f'Server cannot get current robot position: {e}'
             rospy.logerr(anm.tag_log(log_msg, self.log_tag))
 
-    # Detect robot current room
     def get_location(self):
+        """
+        Detects robot current position using ``get_pose_client()`` function and then checks in which room
+        it is, it also updates robot location in the ontology using ``armor_client`` replace data belonging
+        to an individual and finally syncs the reasoner.
+
+        Returns:
+            is_in(string)
+        """
         pose = Point()
         pose = self.get_pose_client()
         now = self.cut_dataprop_list(self.client.query.dataprop_b2_ind("now", "Robot"))[0]
@@ -184,18 +257,30 @@ class TopologicalMap:
 
 
     def update_ontology(self, now):
+        """
+        The function which is called in ``finite_state_machine`` node, it gets current time instance as
+        an argument, it gets robot current location using ``get_location()`` function, it gets robot current battery
+        level using ``get_battery_level_client()`` function, and updates them in the ontology. It sorts the last visit
+        times and detects which room is the most behind and sets it as the target room. It detects the urgent rooms
+        considering the last visit times and robot urgeny threshold and updates them in the ontology, finally, it 
+        returns the target room as it is found if the battery level is high enough otherwise it returns room "E" as
+        target room.
+
+        Returns:
+            target_room(string)
+        """
         # Update robot time instance
         prev_time = self.cut_dataprop_list(self.client.query.dataprop_b2_ind("now", "Robot"))[0]
         self.client.manipulation.replace_dataprop_b2_ind("now", "Robot", "Int", str(now.secs), prev_time)
         self.client.utils.sync_buffered_reasoner()
-        
+        # Update battery level
         prev_battery_level = self.cut_dataprop_list(self.client.query.dataprop_b2_ind("batteryLvl", "Robot"))[0]
         battery_level = str(self.get_battery_level_client())
         self.client.manipulation.replace_dataprop_b2_ind("batteryLvl", "Robot", "Int", battery_level, prev_battery_level)
         self.client.utils.sync_buffered_reasoner()
         log_msg = 'battery level: ' + self.cut_dataprop_list(self.client.query.dataprop_b2_ind("batteryLvl", "Robot"))[0]
         rospy.loginfo(anm.tag_log(log_msg, self.log_tag))
-
+        # Update robot location
         loc = self.get_location()
         log_msg = 'current location: ' + loc
         rospy.loginfo(anm.tag_log(log_msg, self.log_tag))

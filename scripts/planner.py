@@ -1,5 +1,24 @@
 #! /usr/bin/env python
+"""
+.. module:: planner
+    :platform: Unix
+    :synopsis: the planner python script in ontological_robot_control package
 
+.. moduleauthor:: Ali Yousefi <aliyousef98@outlook.com>
+
+Uses Service:
+    /state/get_pose
+
+Uses Action:
+    /motion/planner
+
+Uses Param:
+    /config/environment_size
+
+An action server to simulate motion planning.
+Given a target position, it retrieves the current robot position from the 
+``robot-state`` node, and return a plan as a set of via points.
+"""
 import rospy
 # Import constant name defined to structure the architecture.
 from ontological_robot_control import architecture_name_mapper as anm
@@ -13,11 +32,11 @@ import ontological_robot_control  # This is required to pass the `PlanAction` ty
 # A tag for identifying logs producer.
 LOG_TAG = anm.NODE_PLANNER
 
-# An action server to simulate motion planning.
-# Given a target position, it retrieve the current robot position from the 
-# `robot-state` node, and return a plan as a set of via points.
 class PlaningAction(object):
-
+    """
+    Initialises the motion planner action server and tries to find the path between the robot current
+    position and the target point when the ``execute_callback(goal)`` function is called .
+    """
     def __init__(self):
         # Get random-based parameters used by this server
         self._environment_size = rospy.get_param(anm.PARAM_ENVIRONMENT_SIZE)
@@ -32,15 +51,17 @@ class PlaningAction(object):
                    f'spanning. Each point will be generated '
                    f'with a delay spanning.')
       
-    # The callback invoked when a client set a goal to the `planner` server.
-    # This function will return a list of random points (i.e., the plan) when the fist point
-    # is the current robot position (retrieved from the `robot-state` node), while the last 
-    # point is the `goal` position (given as input parameter). The plan will contain 
-    # a random number of other points, which spans in the range 
-    # [`self._random_plan_points[0]`, `self._random_plan_points[1]`). To simulate computation,
-    # each point is added to the plan with a random delay spanning in the range 
-    # [`self._random_plan_time[0]`, `self._random_plan_time[1]`).
     def execute_callback(self, goal):
+        """
+        The callback invoked when a client set a goal to the planner server.
+        This function will return a list of random points (i.e., the plan) when the fist point
+        is the current robot position (retrieved from the ``robot-state`` node), while 
+        the last point is the ``goal`` position (given as input parameter). The plan will contain 
+        only the starting and end points and takes 0.1 sec to generate the plan.
+
+        Args:
+            goal(Point)
+        """
         # Get the input parameters to compute the plan, i.e., the start (or current) and target positions.
         start_point = _get_pose_client()
         target_point = goal.target
@@ -85,9 +106,14 @@ class PlaningAction(object):
     def _is_valid(self, point):
         return 0.0 <= point.x <= self._environment_size[0] and 0.0 <= point.y <= self._environment_size[1]
 
-
-# Retrieve the current robot pose by the `state/get_pose` server of the `robot-state` node.
 def _get_pose_client():
+    """
+    Retrieve the current robot pose by the ``state/get_pose`` server of the ``robot-state``
+    node.
+
+    Returns:
+        pose(Point)
+    """
     # Eventually, wait for the server to be initialised.
     rospy.wait_for_service(anm.SERVER_GET_POSE)
     try:
@@ -103,9 +129,14 @@ def _get_pose_client():
         log_msg = f'Server cannot get current robot position: {e}'
         rospy.logerr(anm.tag_log(log_msg, LOG_TAG))
 
-
-if __name__ == '__main__':
-    # Initialise the node, its action server, and wait.    
+def main():
+    """
+    Initialise the node, its action server, and wait. 
+    """   
     rospy.init_node(anm.NODE_PLANNER, log_level=rospy.INFO)
     server = PlaningAction()
     rospy.spin()
+
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Finite State Machine Node &mdash; ontological_robot_control 1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Planner Node" href="planner.html" />
+    <link rel="prev" title="Topological Map Helper Script" href="topological_map.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> ontological_robot_control
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="software_architecture.html">Software Architucture</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="scripts.html">Scripts</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="topological_map.html">Topological Map Helper Script</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Finite State Machine Node</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#scripts.finite_state_machine.Corridor1"><code class="docutils literal notranslate"><span class="pre">Corridor1</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.finite_state_machine.Corridor1.execute"><code class="docutils literal notranslate"><span class="pre">Corridor1.execute()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#scripts.finite_state_machine.Corridor2"><code class="docutils literal notranslate"><span class="pre">Corridor2</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.finite_state_machine.Corridor2.execute"><code class="docutils literal notranslate"><span class="pre">Corridor2.execute()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#scripts.finite_state_machine.Room1"><code class="docutils literal notranslate"><span class="pre">Room1</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.finite_state_machine.Room1.execute"><code class="docutils literal notranslate"><span class="pre">Room1.execute()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#scripts.finite_state_machine.Room2"><code class="docutils literal notranslate"><span class="pre">Room2</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.finite_state_machine.Room2.execute"><code class="docutils literal notranslate"><span class="pre">Room2.execute()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#scripts.finite_state_machine.Room3"><code class="docutils literal notranslate"><span class="pre">Room3</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.finite_state_machine.Room3.execute"><code class="docutils literal notranslate"><span class="pre">Room3.execute()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#scripts.finite_state_machine.Room4"><code class="docutils literal notranslate"><span class="pre">Room4</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.finite_state_machine.Room4.execute"><code class="docutils literal notranslate"><span class="pre">Room4.execute()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#scripts.finite_state_machine.RoomE"><code class="docutils literal notranslate"><span class="pre">RoomE</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.finite_state_machine.RoomE.execute"><code class="docutils literal notranslate"><span class="pre">RoomE.execute()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#scripts.finite_state_machine.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#scripts.finite_state_machine.send_pose"><code class="docutils literal notranslate"><span class="pre">send_pose()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#scripts.finite_state_machine.send_room_pose"><code class="docutils literal notranslate"><span class="pre">send_room_pose()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="planner.html">Planner Node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="planner_client.html">Planner Client Node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="controller.html">Controller Node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="controller_client.html">Controller Client Node</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ontological_robot_control</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="scripts.html">Scripts</a> &raquo;</li>
+      <li>Finite State Machine Node</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/finite_state_machine.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-scripts.finite_state_machine">
+<span id="finite-state-machine-node"></span><h1>Finite State Machine Node<a class="headerlink" href="#module-scripts.finite_state_machine" title="Permalink to this heading"></a></h1>
+<span class="target" id="module-finite_state_machine"></span><dl class="simple">
+<dt>Publishes to:</dt><dd><p>/target_point</p>
+</dd>
+<dt>Uses Service:</dt><dd><p>/state/set_battery_level</p>
+</dd>
+<dt>Uses helper script:</dt><dd><p>/utilities/ontological_robot_control/topological_map.py</p>
+</dd>
+</dl>
+<p>Defines the states and transitions for the finite state machine of the topological map, it also
+uses <code class="docutils literal notranslate"><span class="pre">topological_map.py</span></code> helper script to update the ontology while the process is running, and
+retreives the target room based on last visit times, finaly sends the target room pose to the
+<code class="docutils literal notranslate"><span class="pre">planner_client</span></code> through <code class="docutils literal notranslate"><span class="pre">/target_point</span></code> in order to find the path</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="scripts.finite_state_machine.Corridor1">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scripts.finite_state_machine.</span></span><span class="sig-name descname"><span class="pre">Corridor1</span></span><a class="reference internal" href="_modules/scripts/finite_state_machine.html#Corridor1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.finite_state_machine.Corridor1" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the state when robot is in corridor “C1”</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.finite_state_machine.Corridor1.execute">
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userdata</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/finite_state_machine.html#Corridor1.execute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.finite_state_machine.Corridor1.execute" title="Permalink to this definition"></a></dt>
+<dd><p>Performs the ontology update and sends target room pose to the <code class="docutils literal notranslate"><span class="pre">planner_client</span></code>,
+finally considering the target room, chooses one of the transistions(doors) by returning the
+door’s name string</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>userdata</strong> (<em>None</em>) – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>“D1” or “D2” or “D5” or “D7”(string)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="scripts.finite_state_machine.Corridor2">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scripts.finite_state_machine.</span></span><span class="sig-name descname"><span class="pre">Corridor2</span></span><a class="reference internal" href="_modules/scripts/finite_state_machine.html#Corridor2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.finite_state_machine.Corridor2" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the state when robot is in corridor “C2”</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.finite_state_machine.Corridor2.execute">
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userdata</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/finite_state_machine.html#Corridor2.execute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.finite_state_machine.Corridor2.execute" title="Permalink to this definition"></a></dt>
+<dd><p>Performs the ontology update and sends target room pose to the <code class="docutils literal notranslate"><span class="pre">planner_client</span></code>,
+finally considering the target room, chooses one of the transistions(doors) by returning the
+door’s name string</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>userdata</strong> (<em>None</em>) – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>“D3” or “D4” or “D5” or “D6”(string)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="scripts.finite_state_machine.Room1">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scripts.finite_state_machine.</span></span><span class="sig-name descname"><span class="pre">Room1</span></span><a class="reference internal" href="_modules/scripts/finite_state_machine.html#Room1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.finite_state_machine.Room1" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the state when robot is in room “R1”</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.finite_state_machine.Room1.execute">
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userdata</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/finite_state_machine.html#Room1.execute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.finite_state_machine.Room1.execute" title="Permalink to this definition"></a></dt>
+<dd><p>Performs the ontology update and sends target room pose to the <code class="docutils literal notranslate"><span class="pre">planner_client</span></code>,
+finally if the target room is different from current room (R1) it returns the only door’s name (D1)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>userdata</strong> (<em>None</em>) – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>“D1”(string)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="scripts.finite_state_machine.Room2">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scripts.finite_state_machine.</span></span><span class="sig-name descname"><span class="pre">Room2</span></span><a class="reference internal" href="_modules/scripts/finite_state_machine.html#Room2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.finite_state_machine.Room2" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the state when robot is in room “R2”</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.finite_state_machine.Room2.execute">
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userdata</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/finite_state_machine.html#Room2.execute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.finite_state_machine.Room2.execute" title="Permalink to this definition"></a></dt>
+<dd><p>Performs the ontology update and sends target room pose to the <code class="docutils literal notranslate"><span class="pre">planner_client</span></code>,
+finally if the target room is different from current room (R2) it returns the only door’s name (D2)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>userdata</strong> (<em>None</em>) – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>“D2”(string)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="scripts.finite_state_machine.Room3">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scripts.finite_state_machine.</span></span><span class="sig-name descname"><span class="pre">Room3</span></span><a class="reference internal" href="_modules/scripts/finite_state_machine.html#Room3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.finite_state_machine.Room3" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the state when robot is in room “R3”</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.finite_state_machine.Room3.execute">
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userdata</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/finite_state_machine.html#Room3.execute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.finite_state_machine.Room3.execute" title="Permalink to this definition"></a></dt>
+<dd><p>Performs the ontology update and sends target room pose to the <code class="docutils literal notranslate"><span class="pre">planner_client</span></code>
+,finally if the target room is different from current room (R3) it returns the only door’s name (D3)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>userdata</strong> (<em>None</em>) – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>“D3”(string)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="scripts.finite_state_machine.Room4">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scripts.finite_state_machine.</span></span><span class="sig-name descname"><span class="pre">Room4</span></span><a class="reference internal" href="_modules/scripts/finite_state_machine.html#Room4"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.finite_state_machine.Room4" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the state when robot is in room “R4”</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.finite_state_machine.Room4.execute">
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userdata</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/finite_state_machine.html#Room4.execute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.finite_state_machine.Room4.execute" title="Permalink to this definition"></a></dt>
+<dd><p>Performs the ontology update and sends target room pose to the <code class="docutils literal notranslate"><span class="pre">planner_client</span></code>,
+finally if the target room is different from current room (R4) it returns the only door’s name (D4)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>userdata</strong> (<em>None</em>) – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>“D4”(string)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="scripts.finite_state_machine.RoomE">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scripts.finite_state_machine.</span></span><span class="sig-name descname"><span class="pre">RoomE</span></span><a class="reference internal" href="_modules/scripts/finite_state_machine.html#RoomE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.finite_state_machine.RoomE" title="Permalink to this definition"></a></dt>
+<dd><p>defines the state when robot is in room “E”</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.finite_state_machine.RoomE.execute">
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userdata</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/finite_state_machine.html#RoomE.execute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.finite_state_machine.RoomE.execute" title="Permalink to this definition"></a></dt>
+<dd><p>Since the charger is in room “E” charges the robot using <code class="docutils literal notranslate"><span class="pre">/state/set_battery_level</span></code> service
+performs the ontology update and sends target room pose to the <code class="docutils literal notranslate"><span class="pre">planner_client</span></code>,
+finally considering the target room, chooses one of the transistions(doors) by returning
+the door’s name string</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>userdata</strong> (<em>None</em>) – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>“D7” or “D6”(string)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scripts.finite_state_machine.main">
+<span class="sig-prename descclassname"><span class="pre">scripts.finite_state_machine.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/finite_state_machine.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.finite_state_machine.main" title="Permalink to this definition"></a></dt>
+<dd><p>The main function for finite_state_machine node, initialises the node and takes an instance of
+TopologicalMap class in the time instance now, defines the publisher to the <code class="docutils literal notranslate"><span class="pre">/target_point</span></code> topic
+, defines the states and transitions of the finite state machine for topological map and finally
+starts the finite state machine process</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scripts.finite_state_machine.send_pose">
+<span class="sig-prename descclassname"><span class="pre">scripts.finite_state_machine.</span></span><span class="sig-name descname"><span class="pre">send_pose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/finite_state_machine.html#send_pose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.finite_state_machine.send_pose" title="Permalink to this definition"></a></dt>
+<dd><p>Publishes a target pose value to <code class="docutils literal notranslate"><span class="pre">planner_client</span></code> through <code class="docutils literal notranslate"><span class="pre">/target_point</span></code> topic</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>float</em>) – </p></li>
+<li><p><strong>y</strong> (<em>float</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scripts.finite_state_machine.send_room_pose">
+<span class="sig-prename descclassname"><span class="pre">scripts.finite_state_machine.</span></span><span class="sig-name descname"><span class="pre">send_room_pose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">room</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/finite_state_machine.html#send_room_pose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.finite_state_machine.send_room_pose" title="Permalink to this definition"></a></dt>
+<dd><p>Sends target room’s corresponding position by calling <code class="docutils literal notranslate"><span class="pre">send_pose(x,y)</span></code> function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>room</strong> (<em>string</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="topological_map.html" class="btn btn-neutral float-left" title="Topological Map Helper Script" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="planner.html" class="btn btn-neutral float-right" title="Planner Node" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Ali Yousefi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

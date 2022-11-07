@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>scripts.finite_state_machine &mdash; ontological_robot_control 1.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> ontological_robot_control
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../software_architecture.html">Software Architucture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../scripts.html">Scripts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">ontological_robot_control</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>scripts.finite_state_machine</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for scripts.finite_state_machine</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: finite_state_machine</span>
+<span class="sd">    :platform: Unix</span>
+<span class="sd">    :synopsis: the finite_state_machine python script in ontological_robot_control package</span>
+
+<span class="sd">.. moduleauthor:: Ali Yousefi &lt;aliyousef98@outlook.com&gt;</span>
+
+<span class="sd">Publishes to:</span>
+<span class="sd">    /target_point</span>
+
+<span class="sd">Uses Service:</span>
+<span class="sd">    /state/set_battery_level</span>
+
+<span class="sd">Uses helper script:</span>
+<span class="sd">    /utilities/ontological_robot_control/topological_map.py</span>
+
+<span class="sd">Defines the states and transitions for the finite state machine of the topological map, it also </span>
+<span class="sd">uses ``topological_map.py`` helper script to update the ontology while the process is running, and </span>
+<span class="sd">retreives the target room based on last visit times, finaly sends the target room pose to the </span>
+<span class="sd">``planner_client`` through ``/target_point`` in order to find the path</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">dirname</span><span class="p">,</span> <span class="n">realpath</span>
+<span class="kn">import</span> <span class="nn">rospy</span>
+<span class="kn">import</span> <span class="nn">smach</span>
+<span class="kn">import</span> <span class="nn">smach_ros</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">ontological_robot_control</span>
+<span class="kn">from</span> <span class="nn">ontological_robot_control.msg</span> <span class="kn">import</span> <span class="n">PlanGoal</span>
+<span class="kn">from</span> <span class="nn">ontological_robot_control.srv</span> <span class="kn">import</span> <span class="n">SetBatteryLevel</span>
+<span class="kn">from</span> <span class="nn">ontological_robot_control</span> <span class="kn">import</span> <span class="n">architecture_name_mapper</span> <span class="k">as</span> <span class="n">anm</span>
+<span class="kn">from</span> <span class="nn">ontological_robot_control.topological_map</span> <span class="kn">import</span> <span class="n">TopologicalMap</span>
+
+<span class="c1"># A tag for identifying logs producer.</span>
+<span class="n">LOG_TAG</span> <span class="o">=</span> <span class="n">anm</span><span class="o">.</span><span class="n">NODE_FINITE_STATE_MACHINE</span>
+<span class="n">LOOP_TIME</span> <span class="o">=</span> <span class="mi">2</span>
+
+<span class="n">pub</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">tm</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="send_room_pose"><a class="viewcode-back" href="../../finite_state_machine.html#scripts.finite_state_machine.send_room_pose">[docs]</a><span class="k">def</span> <span class="nf">send_room_pose</span><span class="p">(</span><span class="n">room</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sends target room&#39;s corresponding position by calling ``send_pose(x,y)`` function</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        room(string)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">log_msg</span> <span class="o">=</span> <span class="s1">&#39;Received request for robot to move to &#39;</span> <span class="o">+</span> <span class="n">room</span>
+    <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="n">anm</span><span class="o">.</span><span class="n">tag_log</span><span class="p">(</span><span class="n">log_msg</span><span class="p">,</span> <span class="n">LOG_TAG</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">room</span>   <span class="o">==</span> <span class="s1">&#39;E&#39;</span><span class="p">:</span>
+        <span class="n">send_pose</span><span class="p">(</span><span class="mf">3.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">room</span> <span class="o">==</span> <span class="s1">&#39;R1&#39;</span><span class="p">:</span>
+        <span class="n">send_pose</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">room</span> <span class="o">==</span> <span class="s1">&#39;R2&#39;</span><span class="p">:</span> 
+        <span class="n">send_pose</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">7.5</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">room</span> <span class="o">==</span> <span class="s1">&#39;R3&#39;</span><span class="p">:</span>
+        <span class="n">send_pose</span><span class="p">(</span><span class="mf">9.0</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">)</span> 
+    <span class="k">elif</span> <span class="n">room</span> <span class="o">==</span> <span class="s1">&#39;R4&#39;</span><span class="p">:</span>
+        <span class="n">send_pose</span><span class="p">(</span><span class="mf">9.0</span><span class="p">,</span> <span class="mf">7.5</span><span class="p">)</span> 
+    <span class="k">elif</span> <span class="n">room</span> <span class="o">==</span> <span class="s1">&#39;C1&#39;</span><span class="p">:</span>
+        <span class="n">send_pose</span><span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">)</span> 
+    <span class="k">elif</span> <span class="n">room</span> <span class="o">==</span> <span class="s1">&#39;C2&#39;</span><span class="p">:</span>
+        <span class="n">send_pose</span><span class="p">(</span><span class="mf">6.5</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="send_pose"><a class="viewcode-back" href="../../finite_state_machine.html#scripts.finite_state_machine.send_pose">[docs]</a><span class="k">def</span> <span class="nf">send_pose</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Publishes a target pose value to ``planner_client`` through ``/target_point`` topic </span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x(float)</span>
+<span class="sd">        y(float)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">goal</span> <span class="o">=</span> <span class="n">PlanGoal</span><span class="p">()</span>
+    <span class="n">goal</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
+    <span class="n">goal</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
+    <span class="n">pub</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">goal</span><span class="p">)</span>
+    <span class="n">log_msg</span> <span class="o">=</span> <span class="s1">&#39;Request sent to planner server&#39;</span>
+    <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="n">anm</span><span class="o">.</span><span class="n">tag_log</span><span class="p">(</span><span class="n">log_msg</span><span class="p">,</span> <span class="n">LOG_TAG</span><span class="p">))</span></div>
+
+
+<span class="k">def</span> <span class="nf">_set_battery_level_client</span><span class="p">(</span><span class="n">battery_level</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Service client function for ``/state/set_battery_level`` Update the current robot battery level</span>
+<span class="sd">    stored in the ``robot-state`` node</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        battery_level(int)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Eventually, wait for the server to be initialised.</span>
+    <span class="n">rospy</span><span class="o">.</span><span class="n">wait_for_service</span><span class="p">(</span><span class="n">anm</span><span class="o">.</span><span class="n">SERVER_SET_BATTERY_LEVEL</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Log service call.</span>
+        <span class="n">log_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Set current robot battery level to the `</span><span class="si">{</span><span class="n">anm</span><span class="o">.</span><span class="n">SERVER_SET_BATTERY_LEVEL</span><span class="si">}</span><span class="s1">` node.&#39;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="n">anm</span><span class="o">.</span><span class="n">tag_log</span><span class="p">(</span><span class="n">log_msg</span><span class="p">,</span> <span class="n">LOG_TAG</span><span class="p">))</span>
+        <span class="c1"># Call the service and set the current robot position.</span>
+        <span class="n">service</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">ServiceProxy</span><span class="p">(</span><span class="n">anm</span><span class="o">.</span><span class="n">SERVER_SET_BATTERY_LEVEL</span><span class="p">,</span> <span class="n">SetBatteryLevel</span><span class="p">)</span>
+        <span class="n">service</span><span class="p">(</span><span class="n">battery_level</span><span class="p">)</span>  <span class="c1"># The `response` is not used.</span>
+    <span class="k">except</span> <span class="n">rospy</span><span class="o">.</span><span class="n">ServiceException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">log_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Server cannot set current robot battery level: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="n">anm</span><span class="o">.</span><span class="n">tag_log</span><span class="p">(</span><span class="n">log_msg</span><span class="p">,</span> <span class="n">LOG_TAG</span><span class="p">))</span>
+
+<span class="c1"># define state Room E</span>
+<div class="viewcode-block" id="RoomE"><a class="viewcode-back" href="../../finite_state_machine.html#scripts.finite_state_machine.RoomE">[docs]</a><span class="k">class</span> <span class="nc">RoomE</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    defines the state when robot is in room &quot;E&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="c1"># initialisation function, it should not wait</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;D6&#39;</span><span class="p">,</span><span class="s1">&#39;D7&#39;</span><span class="p">,</span> <span class="s1">&#39;stay&#39;</span><span class="p">])</span>
+
+<div class="viewcode-block" id="RoomE.execute"><a class="viewcode-back" href="../../finite_state_machine.html#scripts.finite_state_machine.RoomE.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Since the charger is in room &quot;E&quot; charges the robot using ``/state/set_battery_level`` service</span>
+<span class="sd">        performs the ontology update and sends target room pose to the ``planner_client``,</span>
+<span class="sd">        finally considering the target room, chooses one of the transistions(doors) by returning </span>
+<span class="sd">        the door&#39;s name string</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            userdata(None)</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            &quot;D7&quot; or &quot;D6&quot;(string)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_set_battery_level_client</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+        <span class="n">log_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Battery Charged.&#39;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="n">anm</span><span class="o">.</span><span class="n">tag_log</span><span class="p">(</span><span class="n">log_msg</span><span class="p">,</span> <span class="n">LOG_TAG</span><span class="p">))</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">LOOP_TIME</span><span class="p">)</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">get_rostime</span><span class="p">()</span>
+        <span class="n">target_room</span> <span class="o">=</span> <span class="n">tm</span><span class="o">.</span><span class="n">update_ontology</span><span class="p">(</span><span class="n">now</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">target_room</span> <span class="o">==</span> <span class="s2">&quot;C1&quot;</span> <span class="ow">or</span> <span class="n">target_room</span> <span class="o">==</span> <span class="s2">&quot;R1&quot;</span> <span class="ow">or</span> <span class="n">target_room</span> <span class="o">==</span> <span class="s2">&quot;R2&quot;</span><span class="p">:</span>
+            <span class="n">send_room_pose</span><span class="p">(</span><span class="s1">&#39;C1&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s1">&#39;D7&#39;</span>
+        <span class="k">elif</span> <span class="n">target_room</span> <span class="o">==</span> <span class="s2">&quot;C2&quot;</span> <span class="ow">or</span> <span class="n">target_room</span> <span class="o">==</span> <span class="s2">&quot;R3&quot;</span> <span class="ow">or</span> <span class="n">target_room</span> <span class="o">==</span> <span class="s2">&quot;R4&quot;</span><span class="p">:</span>
+            <span class="n">send_room_pose</span><span class="p">(</span><span class="s1">&#39;C2&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s1">&#39;D6&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;stay&#39;</span></div></div>
+
+<span class="c1"># define state Room 1</span>
+<div class="viewcode-block" id="Room1"><a class="viewcode-back" href="../../finite_state_machine.html#scripts.finite_state_machine.Room1">[docs]</a><span class="k">class</span> <span class="nc">Room1</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Defines the state when robot is in room &quot;R1&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># initialisation function, it should not wait</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;D1&#39;</span><span class="p">,</span> <span class="s1">&#39;stay&#39;</span><span class="p">])</span>
+        
+<div class="viewcode-block" id="Room1.execute"><a class="viewcode-back" href="../../finite_state_machine.html#scripts.finite_state_machine.Room1.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Performs the ontology update and sends target room pose to the ``planner_client``,</span>
+<span class="sd">        finally if the target room is different from current room (R1) it returns the only door&#39;s name (D1)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            userdata(None)</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            &quot;D1&quot;(string)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">LOOP_TIME</span><span class="p">)</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">get_rostime</span><span class="p">()</span>
+        <span class="n">target_room</span> <span class="o">=</span> <span class="n">tm</span><span class="o">.</span><span class="n">update_ontology</span><span class="p">(</span><span class="n">now</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">target_room</span> <span class="o">!=</span> <span class="s2">&quot;R1&quot;</span><span class="p">:</span>
+            <span class="n">send_room_pose</span><span class="p">(</span><span class="s1">&#39;C1&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s1">&#39;D1&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;stay&#39;</span></div></div>
+
+<span class="c1"># define state Room 2</span>
+<div class="viewcode-block" id="Room2"><a class="viewcode-back" href="../../finite_state_machine.html#scripts.finite_state_machine.Room2">[docs]</a><span class="k">class</span> <span class="nc">Room2</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Defines the state when robot is in room &quot;R2&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># initialisation function, it should not wait</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;D2&#39;</span><span class="p">,</span> <span class="s1">&#39;stay&#39;</span><span class="p">])</span>
+        
+<div class="viewcode-block" id="Room2.execute"><a class="viewcode-back" href="../../finite_state_machine.html#scripts.finite_state_machine.Room2.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Performs the ontology update and sends target room pose to the ``planner_client``,</span>
+<span class="sd">        finally if the target room is different from current room (R2) it returns the only door&#39;s name (D2)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            userdata(None)</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            &quot;D2&quot;(string)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">LOOP_TIME</span><span class="p">)</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">get_rostime</span><span class="p">()</span>
+        <span class="n">target_room</span> <span class="o">=</span> <span class="n">tm</span><span class="o">.</span><span class="n">update_ontology</span><span class="p">(</span><span class="n">now</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">target_room</span> <span class="o">!=</span> <span class="s2">&quot;R2&quot;</span><span class="p">:</span>
+            <span class="n">send_room_pose</span><span class="p">(</span><span class="s1">&#39;C1&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s1">&#39;D2&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;stay&#39;</span></div></div>
+
+<span class="c1"># define state Room 3</span>
+<div class="viewcode-block" id="Room3"><a class="viewcode-back" href="../../finite_state_machine.html#scripts.finite_state_machine.Room3">[docs]</a><span class="k">class</span> <span class="nc">Room3</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Defines the state when robot is in room &quot;R3&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># initialisation function, it should not wait</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;D3&#39;</span><span class="p">,</span> <span class="s1">&#39;stay&#39;</span><span class="p">])</span>
+        
+<div class="viewcode-block" id="Room3.execute"><a class="viewcode-back" href="../../finite_state_machine.html#scripts.finite_state_machine.Room3.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Performs the ontology update and sends target room pose to the ``planner_client``</span>
+<span class="sd">        ,finally if the target room is different from current room (R3) it returns the only door&#39;s name (D3)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            userdata(None)</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            &quot;D3&quot;(string)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">LOOP_TIME</span><span class="p">)</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">get_rostime</span><span class="p">()</span>
+        <span class="n">target_room</span> <span class="o">=</span> <span class="n">tm</span><span class="o">.</span><span class="n">update_ontology</span><span class="p">(</span><span class="n">now</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">target_room</span> <span class="o">!=</span> <span class="s2">&quot;R3&quot;</span><span class="p">:</span>
+            <span class="n">send_room_pose</span><span class="p">(</span><span class="s1">&#39;C2&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s1">&#39;D3&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;stay&#39;</span></div></div>
+
+<span class="c1"># define state Room 4</span>
+<div class="viewcode-block" id="Room4"><a class="viewcode-back" href="../../finite_state_machine.html#scripts.finite_state_machine.Room4">[docs]</a><span class="k">class</span> <span class="nc">Room4</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Defines the state when robot is in room &quot;R4&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;D4&#39;</span><span class="p">,</span> <span class="s1">&#39;stay&#39;</span><span class="p">])</span>
+        
+<div class="viewcode-block" id="Room4.execute"><a class="viewcode-back" href="../../finite_state_machine.html#scripts.finite_state_machine.Room4.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Performs the ontology update and sends target room pose to the ``planner_client``, </span>
+<span class="sd">        finally if the target room is different from current room (R4) it returns the only door&#39;s name (D4)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            userdata(None)</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            &quot;D4&quot;(string)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">LOOP_TIME</span><span class="p">)</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">get_rostime</span><span class="p">()</span>
+        <span class="n">target_room</span> <span class="o">=</span> <span class="n">tm</span><span class="o">.</span><span class="n">update_ontology</span><span class="p">(</span><span class="n">now</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">target_room</span> <span class="o">!=</span> <span class="s2">&quot;R4&quot;</span><span class="p">:</span>
+            <span class="n">send_room_pose</span><span class="p">(</span><span class="s1">&#39;C2&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s1">&#39;D4&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;stay&#39;</span></div></div>
+    
+<span class="c1"># define state Corridor 1</span>
+<div class="viewcode-block" id="Corridor1"><a class="viewcode-back" href="../../finite_state_machine.html#scripts.finite_state_machine.Corridor1">[docs]</a><span class="k">class</span> <span class="nc">Corridor1</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Defines the state when robot is in corridor &quot;C1&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;D1&#39;</span><span class="p">,</span><span class="s1">&#39;D2&#39;</span><span class="p">,</span><span class="s1">&#39;D5&#39;</span><span class="p">,</span><span class="s1">&#39;D7&#39;</span><span class="p">,</span><span class="s1">&#39;stay&#39;</span><span class="p">])</span>
+
+<div class="viewcode-block" id="Corridor1.execute"><a class="viewcode-back" href="../../finite_state_machine.html#scripts.finite_state_machine.Corridor1.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Performs the ontology update and sends target room pose to the ``planner_client``, </span>
+<span class="sd">        finally considering the target room, chooses one of the transistions(doors) by returning the</span>
+<span class="sd">        door&#39;s name string</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            userdata(None)</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            &quot;D1&quot; or &quot;D2&quot; or &quot;D5&quot; or &quot;D7&quot;(string)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">LOOP_TIME</span><span class="p">)</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">get_rostime</span><span class="p">()</span>
+        <span class="n">target_room</span> <span class="o">=</span> <span class="n">tm</span><span class="o">.</span><span class="n">update_ontology</span><span class="p">(</span><span class="n">now</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">target_room</span> <span class="o">==</span> <span class="s2">&quot;R1&quot;</span><span class="p">:</span>
+            <span class="n">send_room_pose</span><span class="p">(</span><span class="s1">&#39;R1&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s1">&#39;D1&#39;</span>
+        <span class="k">elif</span> <span class="n">target_room</span> <span class="o">==</span> <span class="s2">&quot;R2&quot;</span><span class="p">:</span>
+            <span class="n">send_room_pose</span><span class="p">(</span><span class="s1">&#39;R2&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s1">&#39;D2&#39;</span>
+        <span class="k">elif</span> <span class="n">target_room</span> <span class="o">==</span> <span class="s2">&quot;C2&quot;</span> <span class="ow">or</span> <span class="n">target_room</span> <span class="o">==</span> <span class="s2">&quot;R3&quot;</span> <span class="ow">or</span> <span class="n">target_room</span> <span class="o">==</span> <span class="s2">&quot;R4&quot;</span><span class="p">:</span>
+            <span class="n">send_room_pose</span><span class="p">(</span><span class="s1">&#39;C2&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s1">&#39;D5&#39;</span>
+        <span class="k">elif</span> <span class="n">target_room</span> <span class="o">==</span> <span class="s2">&quot;E&quot;</span><span class="p">:</span>
+            <span class="n">send_room_pose</span><span class="p">(</span><span class="s1">&#39;E&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s1">&#39;D7&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;stay&#39;</span></div></div>
+
+<span class="c1"># define state Corridor 2</span>
+<div class="viewcode-block" id="Corridor2"><a class="viewcode-back" href="../../finite_state_machine.html#scripts.finite_state_machine.Corridor2">[docs]</a><span class="k">class</span> <span class="nc">Corridor2</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Defines the state when robot is in corridor &quot;C2&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;D3&#39;</span><span class="p">,</span><span class="s1">&#39;D4&#39;</span><span class="p">,</span><span class="s1">&#39;D5&#39;</span><span class="p">,</span><span class="s1">&#39;D6&#39;</span><span class="p">,</span><span class="s1">&#39;stay&#39;</span><span class="p">])</span>
+
+<div class="viewcode-block" id="Corridor2.execute"><a class="viewcode-back" href="../../finite_state_machine.html#scripts.finite_state_machine.Corridor2.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Performs the ontology update and sends target room pose to the ``planner_client``, </span>
+<span class="sd">        finally considering the target room, chooses one of the transistions(doors) by returning the</span>
+<span class="sd">        door&#39;s name string</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            userdata(None)</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            &quot;D3&quot; or &quot;D4&quot; or &quot;D5&quot; or &quot;D6&quot;(string)</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">LOOP_TIME</span><span class="p">)</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">get_rostime</span><span class="p">()</span>
+        <span class="n">target_room</span> <span class="o">=</span> <span class="n">tm</span><span class="o">.</span><span class="n">update_ontology</span><span class="p">(</span><span class="n">now</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">target_room</span> <span class="o">==</span> <span class="s2">&quot;R3&quot;</span><span class="p">:</span>
+            <span class="n">send_room_pose</span><span class="p">(</span><span class="s1">&#39;R3&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s1">&#39;D3&#39;</span>
+        <span class="k">elif</span> <span class="n">target_room</span> <span class="o">==</span> <span class="s2">&quot;R4&quot;</span><span class="p">:</span>
+            <span class="n">send_room_pose</span><span class="p">(</span><span class="s1">&#39;R4&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s1">&#39;D4&#39;</span>
+        <span class="k">elif</span> <span class="n">target_room</span> <span class="o">==</span> <span class="s2">&quot;C1&quot;</span> <span class="ow">or</span> <span class="n">target_room</span> <span class="o">==</span> <span class="s2">&quot;R1&quot;</span> <span class="ow">or</span> <span class="n">target_room</span> <span class="o">==</span> <span class="s2">&quot;R2&quot;</span><span class="p">:</span>
+            <span class="n">send_room_pose</span><span class="p">(</span><span class="s1">&#39;C1&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s1">&#39;D5&#39;</span>
+        <span class="k">elif</span> <span class="n">target_room</span> <span class="o">==</span> <span class="s2">&quot;E&quot;</span><span class="p">:</span>
+            <span class="n">send_room_pose</span><span class="p">(</span><span class="s1">&#39;E&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s1">&#39;D6&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;stay&#39;</span></div></div>
+        
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../finite_state_machine.html#scripts.finite_state_machine.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The main function for finite_state_machine node, initialises the node and takes an instance of</span>
+<span class="sd">    TopologicalMap class in the time instance now, defines the publisher to the ``/target_point`` topic</span>
+<span class="sd">    , defines the states and transitions of the finite state machine for topological map and finally </span>
+<span class="sd">    starts the finite state machine process</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Initialise this node.</span>
+    <span class="k">global</span> <span class="n">tm</span>
+    <span class="k">global</span> <span class="n">pub</span>
+
+    <span class="n">rospy</span><span class="o">.</span><span class="n">init_node</span><span class="p">(</span><span class="n">anm</span><span class="o">.</span><span class="n">NODE_FINITE_STATE_MACHINE</span><span class="p">,</span> <span class="n">log_level</span><span class="o">=</span><span class="n">rospy</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+    <span class="n">now</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">get_rostime</span><span class="p">()</span>
+    <span class="n">tm</span> <span class="o">=</span> <span class="n">TopologicalMap</span><span class="p">(</span><span class="n">LOG_TAG</span><span class="p">,</span> <span class="n">now</span><span class="p">)</span>
+
+    <span class="c1"># Publish target point to planner</span>
+    <span class="n">pub</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Publisher</span><span class="p">(</span><span class="s1">&#39;/target_point&#39;</span><span class="p">,</span> <span class="n">ontological_robot_control</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">PlanGoal</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+    <span class="c1"># Create a SMACH state machine</span>
+    <span class="n">sm</span> <span class="o">=</span> <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="p">(</span><span class="n">outcomes</span><span class="o">=</span><span class="p">[])</span>
+    <span class="n">sm</span><span class="o">.</span><span class="n">userdata</span><span class="o">.</span><span class="n">sm_counter</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># Open the container</span>
+    <span class="k">with</span> <span class="n">sm</span><span class="p">:</span>
+        <span class="c1"># Add states to the container</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;E&#39;</span><span class="p">,</span> <span class="n">RoomE</span><span class="p">(),</span> <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;D7&#39;</span><span class="p">:</span><span class="s1">&#39;C1&#39;</span><span class="p">,</span> <span class="s1">&#39;D6&#39;</span><span class="p">:</span><span class="s1">&#39;C2&#39;</span><span class="p">,</span> <span class="s1">&#39;stay&#39;</span><span class="p">:</span><span class="s1">&#39;E&#39;</span><span class="p">})</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;C1&#39;</span><span class="p">,</span> <span class="n">Corridor1</span><span class="p">(),</span> <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;D7&#39;</span><span class="p">:</span><span class="s1">&#39;E&#39;</span><span class="p">,</span> <span class="s1">&#39;D1&#39;</span><span class="p">:</span><span class="s1">&#39;R1&#39;</span><span class="p">,</span> <span class="s1">&#39;D2&#39;</span><span class="p">:</span><span class="s1">&#39;R2&#39;</span><span class="p">,</span> <span class="s1">&#39;D5&#39;</span><span class="p">:</span><span class="s1">&#39;C2&#39;</span><span class="p">,</span> <span class="s1">&#39;stay&#39;</span><span class="p">:</span><span class="s1">&#39;C1&#39;</span><span class="p">})</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;C2&#39;</span><span class="p">,</span> <span class="n">Corridor2</span><span class="p">(),</span> <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;D6&#39;</span><span class="p">:</span><span class="s1">&#39;E&#39;</span><span class="p">,</span> <span class="s1">&#39;D3&#39;</span><span class="p">:</span><span class="s1">&#39;R3&#39;</span><span class="p">,</span> <span class="s1">&#39;D4&#39;</span><span class="p">:</span><span class="s1">&#39;R4&#39;</span><span class="p">,</span> <span class="s1">&#39;D5&#39;</span><span class="p">:</span><span class="s1">&#39;C1&#39;</span><span class="p">,</span> <span class="s1">&#39;stay&#39;</span><span class="p">:</span><span class="s1">&#39;C2&#39;</span><span class="p">})</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;R1&#39;</span><span class="p">,</span> <span class="n">Room1</span><span class="p">(),</span> <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;D1&#39;</span><span class="p">:</span><span class="s1">&#39;C1&#39;</span><span class="p">,</span> <span class="s1">&#39;stay&#39;</span><span class="p">:</span><span class="s1">&#39;R1&#39;</span><span class="p">})</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;R2&#39;</span><span class="p">,</span> <span class="n">Room2</span><span class="p">(),</span> <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;D2&#39;</span><span class="p">:</span><span class="s1">&#39;C1&#39;</span><span class="p">,</span> <span class="s1">&#39;stay&#39;</span><span class="p">:</span><span class="s1">&#39;R2&#39;</span><span class="p">})</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;R3&#39;</span><span class="p">,</span> <span class="n">Room3</span><span class="p">(),</span> <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;D3&#39;</span><span class="p">:</span><span class="s1">&#39;C2&#39;</span><span class="p">,</span> <span class="s1">&#39;stay&#39;</span><span class="p">:</span><span class="s1">&#39;R3&#39;</span><span class="p">})</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;R4&#39;</span><span class="p">,</span> <span class="n">Room4</span><span class="p">(),</span> <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;D4&#39;</span><span class="p">:</span><span class="s1">&#39;C2&#39;</span><span class="p">,</span> <span class="s1">&#39;stay&#39;</span><span class="p">:</span><span class="s1">&#39;R4&#39;</span><span class="p">})</span>
+
+    <span class="c1"># Create and start the introspection server for visualization</span>
+    <span class="n">sis</span> <span class="o">=</span> <span class="n">smach_ros</span><span class="o">.</span><span class="n">IntrospectionServer</span><span class="p">(</span><span class="s1">&#39;server_name&#39;</span><span class="p">,</span> <span class="n">sm</span><span class="p">,</span> <span class="s1">&#39;/SM_ROOT&#39;</span><span class="p">)</span>
+    <span class="n">sis</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+
+    <span class="c1"># Execute the state machine</span>
+    <span class="n">outcome</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+
+    <span class="c1"># Wait for ctrl-c to stop the application</span>
+    <span class="n">rospy</span><span class="o">.</span><span class="n">spin</span><span class="p">()</span>
+    <span class="n">sis</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Ali Yousefi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

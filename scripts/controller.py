@@ -1,5 +1,29 @@
 #! /usr/bin/env python
+"""
+.. module:: controller
+    :platform: Unix
+    :synopsis: the controller python script in ontological_robot_control package
 
+.. moduleauthor:: Ali Yousefi <aliyousef98@outlook.com>
+
+Uses Service:
+    /state/get_pose
+
+    /state/set_pose
+
+    /state/get_battery_level
+
+    /state/set_battery_level
+
+Uses Action:
+    /motion/controller
+
+An action server to simulate motion controlling.
+Given a plan as a set of via points, it simulate the movements to reach each point with 
+a delay computed by dividing the eucledian distance between the robot current position and
+target point by the robot speed. This server updates the current robot position stored in 
+the ``robot-state`` node.
+"""
 import rospy
 # Import constant name defined to structure the architecture.
 from ontological_robot_control import architecture_name_mapper as anm
@@ -14,12 +38,12 @@ from math import sqrt
 # A tag for identifying logs producer.
 LOG_TAG = anm.NODE_CONTROLLER
 
-# An action server to simulate motion controlling.
-# Given a plan as a set of via points, it simulate the movements
-# to reach each point with a random delay. This server updates
-# the current robot position stored in the `robot-state` node.
 class ControllingAction(object):
-
+    """
+    Initialises the motion controller action server and moves the robot through the found path by consuming
+    battery, with a particular speed in a time interval equal to the eucledian distance divided by speed, when
+    the ``execute_callback(goal)`` function is called .
+    """
     def __init__(self):
         # Instantiate and start the action server based on the `SimpleActionServer` class.
         self._as = SimpleActionServer(anm.ACTION_CONTROLLER,
@@ -32,13 +56,15 @@ class ControllingAction(object):
                    f'between each via point spanning.')
         rospy.loginfo(anm.tag_log(log_msg, LOG_TAG))
 
-    # The callback invoked when a client set a goal to the `controller` server.
-    # This function requires a list of via points (i.e., the plan), and it simulate
-    # a movement through each point with a delay spanning in 
-    # ['self._random_motion_time[0]`, `self._random_motion_time[1]`).
-    # As soon as each via point is reached, the related robot position is updated
-    # in the `robot-state` node.
     def execute_callback(self, goal):
+        """
+        The callback invoked when a client set a goal to the ``controller`` server.
+        This function requires a list of via points (i.e., the plan), and it simulate
+        a movement through each point with a delay computed by dividing the eucledian 
+        distance between the robot current position and target point by the robot speed
+        As soon as each via point is reached, the related robot position is updated
+        in the ``robot-state`` node.
+        """
         # Check if the provided plan is processable. If not, this service will be aborted.
         if goal is None or goal.via_points is None or len(goal.via_points) == 0:
             rospy.logerr(anm.tag_log('No via points provided! This service will be aborted!', LOG_TAG))
@@ -81,9 +107,14 @@ class ControllingAction(object):
         return  # Succeeded.
 
 
-# Update the current robot `pose` stored in the `robot-state` node.
-# This method is performed for each point provided in the action's server feedback.
 def _set_pose_client(pose):
+    """
+    Update the current robot ``pose`` stored in the ``robot-state`` node.
+    This method is performed for each point provided in the action's server feedback.
+    
+    Args:
+        pose(Point)
+    """
     # Eventually, wait for the server to be initialised.
     rospy.wait_for_service(anm.SERVER_SET_POSE)
     try:
@@ -97,10 +128,15 @@ def _set_pose_client(pose):
         log_msg = f'Server cannot set current robot position: {e}'
         rospy.logerr(anm.tag_log(log_msg, LOG_TAG))
 
-# Update the current robot `battery level` stored in the `robot-state` node.
-# This method is performed for each point provided in the action's server feedback.
 def _set_battery_level_client(battery_level):
-    # Eventually, wait for the server to be initialised.
+    """
+    Update the current robot ``battery_level`` stored in the ``robot-state`` node.
+    This method is performed for each point provided in the action's server feedback.
+    Eventually, wait for the server to be initialised.
+
+    Args:
+        battey_level(int)
+    """
     rospy.wait_for_service(anm.SERVER_SET_BATTERY_LEVEL)
     try:
         # Log service call.
@@ -113,8 +149,15 @@ def _set_battery_level_client(battery_level):
         log_msg = f'Server cannot set current robot battery level: {e}'
         rospy.logerr(anm.tag_log(log_msg, LOG_TAG))
 
-# Retrieve the current robot pose by the `state/get_pose` server of the `robot-state` node.
+
 def _get_pose_client():
+    """
+    Retrieve the current robot pose by the ``state/get_pose`` server of the 
+    ``robot-state`` node.
+
+    Returns:
+        pose(Point)
+    """
     # Eventually, wait for the server to be initialised.
     rospy.wait_for_service(anm.SERVER_GET_POSE)
     try:
@@ -130,8 +173,14 @@ def _get_pose_client():
         log_msg = f'Server cannot get current robot position: {e}'
         rospy.logerr(anm.tag_log(log_msg, LOG_TAG))
 
-# Retrieve the current robot battery level by the `state/battery_level` server of the `robot-state` node.
 def _get_battery_level_client():
+    """
+    Retrieve the current robot battery level by the ``state/battery_level`` server of the 
+    ``robot-state`` node.
+
+    Returns:
+        battery_level(int)
+    """
     # Eventually, wait for the server to be initialised.
     rospy.wait_for_service(anm.SERVER_GET_BATTERY_LEVEL)
     try:
@@ -148,12 +197,22 @@ def _get_battery_level_client():
         rospy.logerr(anm.tag_log(log_msg, LOG_TAG))
 
 def _consume_battery():
+    """
+    Simulates battery consumption when robot moves from one point to another, gets robot
+    current battery level and sets it a value with minues one level using ``_get_battery_level_client()``
+    and ``_set_battery_level_client()`` functions
+    """
     battery_level = _get_battery_level_client()
-    battery_level = battery_level - 1 
+    battery_level -=1 
     _set_battery_level_client(battery_level)
 
-if __name__ == '__main__':
-    # Initialise the node, its action server, and wait.   
+def main():
+    """
+    Initialise the node, its action server, and wait.   
+    """
     rospy.init_node(anm.NODE_CONTROLLER, log_level=rospy.INFO)
     server = ControllingAction()
     rospy.spin()
+
+if __name__ == '__main__':
+    main()

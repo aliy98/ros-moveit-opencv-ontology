@@ -9,12 +9,6 @@
             args="it.emarolab.armor.ARMORMainService"
       > </node>
 
-      <node pkg = "smach_viewer"  
-            type = "smach_viewer.py"
-            name = "smach_viewer"
-      > </node>
-
-
       <node pkg = "ontological_robot_control"  
             type = "robot_states.py" 
             name = "robot_states"
@@ -47,6 +41,11 @@
             type = "finite_state_machine.py"
             name = "finite_state_machine"
             output = "screen"
+      > </node>
+
+      <node pkg = "smach_viewer"  
+            type = "smach_viewer.py"
+            name = "smach_viewer"
       > </node>
 
 </launch>

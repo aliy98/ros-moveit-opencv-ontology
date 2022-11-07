@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>scripts.planner_client &mdash; ontological_robot_control 1.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> ontological_robot_control
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../software_architecture.html">Software Architucture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../scripts.html">Scripts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">ontological_robot_control</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>scripts.planner_client</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for scripts.planner_client</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: planner_client</span>
+<span class="sd">    :platform: Unix</span>
+<span class="sd">    :synopsis: the planner_client python script in ontological_robot_control package</span>
+
+<span class="sd">.. moduleauthor:: Ali Yousefi &lt;aliyousef98@outlook.com&gt;</span>
+
+<span class="sd">Subscribes to:</span>
+<span class="sd">    /target_point</span>
+
+<span class="sd">Publishes to:</span>
+<span class="sd">    /path</span>
+
+<span class="sd">Uses Action:</span>
+<span class="sd">    /motion/planner</span>
+
+<span class="sd">Gets the target point from ``finite_state_machine`` node through ``/target_point``</span>
+<span class="sd">topic and sends it as an action goal to ``/motion/planner`` action server</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">rospy</span>
+<span class="c1"># Import the ActionServer implementation used.</span>
+<span class="kn">from</span> <span class="nn">actionlib</span> <span class="kn">import</span> <span class="n">SimpleActionClient</span>
+<span class="c1"># Import the messages used by services and publishers.</span>
+<span class="kn">from</span> <span class="nn">ontological_robot_control.msg</span> <span class="kn">import</span> <span class="n">PlanGoal</span>
+<span class="c1"># Import constant name defined to structure the architecture.</span>
+<span class="kn">from</span> <span class="nn">ontological_robot_control</span> <span class="kn">import</span> <span class="n">architecture_name_mapper</span> <span class="k">as</span> <span class="n">anm</span>
+<span class="kn">import</span> <span class="nn">ontological_robot_control</span>  <span class="c1"># This is required to pass the `PlanAction` type for instantiating the `SimpleActionClient`.</span>
+
+<span class="c1"># A tag for identifying logs producer.</span>
+<span class="n">LOG_TAG</span> <span class="o">=</span> <span class="n">anm</span><span class="o">.</span><span class="n">NODE_PLANNER_CLIENT</span>
+
+<span class="n">pub</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="planner_client_callback"><a class="viewcode-back" href="../../planner_client.html#scripts.planner_client.planner_client_callback">[docs]</a><span class="k">def</span> <span class="nf">planner_client_callback</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Subscriber callback function for ``/target_point`` topic, runs the ``planner_client()`` function</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data(Point)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">pub</span>
+    <span class="n">plan_result</span> <span class="o">=</span> <span class="n">planner_client</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+    <span class="c1"># log_msg = &#39;Plan Result:&#39;</span>
+    <span class="c1"># rospy.loginfo(anm.tag_log(log_msg, LOG_TAG))</span>
+    <span class="c1"># print(plan_result)</span>
+
+    <span class="n">pub</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">plan_result</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="planner_client"><a class="viewcode-back" href="../../planner_client.html#scripts.planner_client.planner_client">[docs]</a><span class="k">def</span> <span class="nf">planner_client</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Action client function for ``/motion/planner`` action server, sends the target point to the</span>
+<span class="sd">    planner server</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x(float)</span>
+<span class="sd">        y(float)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Create an action client called &quot;planner_client&quot; with action definition file &quot;ontological_robot_control.msg.PlanAction&quot;</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">SimpleActionClient</span><span class="p">(</span><span class="n">anm</span><span class="o">.</span><span class="n">ACTION_PLANNER</span><span class="p">,</span><span class="n">ontological_robot_control</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">PlanAction</span><span class="p">)</span>
+    <span class="c1"># Waits until the action server has started up and started listening for goals.</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">wait_for_server</span><span class="p">()</span>
+    <span class="n">log_msg</span> <span class="o">=</span> <span class="s1">&#39;waiting for planner server&#39;</span>
+    <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="n">anm</span><span class="o">.</span><span class="n">tag_log</span><span class="p">(</span><span class="n">log_msg</span><span class="p">,</span> <span class="n">LOG_TAG</span><span class="p">))</span>
+    <span class="n">goal</span> <span class="o">=</span> <span class="n">PlanGoal</span><span class="p">()</span>
+    <span class="n">goal</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
+    <span class="n">goal</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
+    <span class="c1"># Sends the goal to the action server.</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">send_goal</span><span class="p">(</span><span class="n">goal</span><span class="p">)</span>
+    <span class="n">log_msg</span> <span class="o">=</span> <span class="s1">&#39;waiting for planner to find the path&#39;</span>
+    <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="n">anm</span><span class="o">.</span><span class="n">tag_log</span><span class="p">(</span><span class="n">log_msg</span><span class="p">,</span> <span class="n">LOG_TAG</span><span class="p">))</span>
+    <span class="n">finished_before_timeout</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">wait_for_result</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">rospy</span><span class="o">.</span><span class="n">Duration</span><span class="p">(</span><span class="mi">30</span><span class="p">))</span>
+    <span class="c1"># detects if the plan is found before timeout</span>
+    <span class="k">if</span> <span class="n">finished_before_timeout</span><span class="p">:</span>
+        <span class="n">log_msg</span> <span class="o">=</span> <span class="s1">&#39;Plan found!&#39;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="n">anm</span><span class="o">.</span><span class="n">tag_log</span><span class="p">(</span><span class="n">log_msg</span><span class="p">,</span> <span class="n">LOG_TAG</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">client</span><span class="o">.</span><span class="n">get_result</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">log_msg</span> <span class="o">=</span> <span class="s1">&#39;Action did not finish before time out!&#39;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="n">anm</span><span class="o">.</span><span class="n">tag_log</span><span class="p">(</span><span class="n">log_msg</span><span class="p">,</span> <span class="n">LOG_TAG</span><span class="p">))</span>
+        <span class="n">client</span><span class="o">.</span><span class="n">cancel_all_goals</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../planner_client.html#scripts.planner_client.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initialise this node, defines subscriber to ``/target_point`` and publisher to </span>
+<span class="sd">    ``/path`` topic with ``planner_client_callback(data)`` function</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">pub</span>
+    <span class="n">rospy</span><span class="o">.</span><span class="n">init_node</span><span class="p">(</span><span class="n">anm</span><span class="o">.</span><span class="n">NODE_PLANNER_CLIENT</span><span class="p">,</span> <span class="n">log_level</span><span class="o">=</span><span class="n">rospy</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+    <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s1">&#39;/target_point&#39;</span><span class="p">,</span> <span class="n">ontological_robot_control</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">PlanGoal</span><span class="p">,</span> <span class="n">planner_client_callback</span><span class="p">)</span>
+    <span class="n">pub</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Publisher</span><span class="p">(</span><span class="s1">&#39;/path&#39;</span><span class="p">,</span> <span class="n">ontological_robot_control</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">PlanResult</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">rospy</span><span class="o">.</span><span class="n">spin</span><span class="p">()</span></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Ali Yousefi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,7 +1,21 @@
 #!/usr/bin/env python
+"""
+.. module:: controller_client
+    :platform: Unix
+    :synopsis: the controller_client python script in ontological_robot_control package
 
+.. moduleauthor:: Ali Yousefi <aliyousef98@outlook.com>
+
+Subscribes to:
+    /path
+
+Uses Action:
+    /motion/controller
+
+Gets the found path from ``planner`` node through ``/path`` topic and sends 
+it as an action goal to ``/motion/controller`` action server
+"""
 import rospy
-import time
 # Import the ActionServer implementation used.
 from actionlib import SimpleActionClient
 # Import constant name defined to structure the architecture.
@@ -12,6 +26,12 @@ import ontological_robot_control.msg  # This is required to pass the `ControlAct
 LOG_TAG = anm.NODE_CONTROLLER_CLIENT
 
 def controller_client_callback(data):
+    """
+    Subscriber callback function for ``/path`` topic, runs the ``controller_client(goal)`` function
+
+    Args:
+        data(Point[])
+    """
     control_result =  controller_client(data)
     # log_msg = 'Control Result:'
     # rospy.loginfo(anm.tag_log(log_msg, LOG_TAG))
@@ -19,7 +39,14 @@ def controller_client_callback(data):
 
 # It uses the controller action server and cancels it if necessary.
 def controller_client(goal):
-    # Create an action client called "controller_client" with action definition file "arch_skeleton.msg.ControlAction"
+    """
+    Action client function for ``/motion/controller`` action server, sends the found path to the
+    controller server
+
+    Args:
+        goal(Point[])
+    """
+    # Create an action client called "controller_client" with action definition file "ontological_robot_control.msg.ControlAction"
     client = SimpleActionClient(anm.ACTION_CONTROLLER,ontological_robot_control.msg.ControlAction)
     # Waits until the action server has started up and started listening for goals.
     client.wait_for_server()
@@ -34,16 +61,21 @@ def controller_client(goal):
     if finished_before_timeout:
         log_msg = 'Target Reached!'
         rospy.loginfo(anm.tag_log(log_msg, LOG_TAG))
-        # time.sleep(3)
         return client.get_result()
     else:
         log_msg = 'Action did not finish before time out!'
         rospy.loginfo(anm.tag_log(log_msg, LOG_TAG))
-        # time.sleep(3)
         client.cancel_all_goals()
 
-if __name__ == '__main__':
+def main():
+    """
+    Main function for controller_client node, initialises the node and states that it 
+    subscribes ``/path`` topic with ``controller_client_callback(data)`` function
+    """
     # Initialise this node.
     rospy.init_node(anm.NODE_CONTROLLER_CLIENT, log_level=rospy.INFO)
     rospy.Subscriber('/path', ontological_robot_control.msg.PlanResult, controller_client_callback)
     rospy.spin()
+
+if __name__ == '__main__':
+    main()
