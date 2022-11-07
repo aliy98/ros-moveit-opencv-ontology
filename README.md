@@ -125,7 +125,7 @@ $ source devel/setup.bash
 $ roslaunch ontological_robot_control topological_map.launch
 ```
 
-Here is the final result of launching this package:
+Here is the result of launching this package:
 
 <p align="center">
 <img src="https://github.com/aliy98/ontological-robot-control/blob/master/docs/diagrams/result.gif" title="result">
