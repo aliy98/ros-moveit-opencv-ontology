@@ -1,7 +1,0 @@
-{
-    "python.autoComplete.extraPaths": [
-        "/home/ali/exp_ws/devel/lib/python3/dist-packages",
-        "/home/ali/catkin_ws/devel/lib/python3/dist-packages",
-        "/opt/ros/noetic/lib/python3/dist-packages"
-    ]
-}
