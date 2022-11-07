@@ -103,7 +103,7 @@ $ mkdir -p catkin_ws/src
 $ cd catkin_ws/src
 ```
 ```bashscript
-$ git clone https://github.com/aliy98/ontological_robot_control
+$ git clone https://github.com/aliy98/ontological-robot-control
 ```
 ```bashscript
 $ cd ..
