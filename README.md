@@ -24,7 +24,7 @@ When robot battery is not low, it should move among locations with this policy:
 
 ## Software Architecture
 In order to simulate the movements of the robot and its stimulus, the approach presented in the 
-[arch_skeleto](https://github.com/buoncubi/arch_skeleton) example is used with some changes
+[arch_skeleton](https://github.com/buoncubi/arch_skeleton) example is used with some changes
 (e.g. planner and controller delay time, battery level).
 
 Other main part of software architucture consists of finite state machine for having a better 
