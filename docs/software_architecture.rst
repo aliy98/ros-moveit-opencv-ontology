@@ -4,7 +4,7 @@ In order to simulate the movements of the robot and its stimulus, the approach p
 `arch_skeleton <https://github.com/buoncubi/arch_skeleton>`_ example is used with some changes
 (e.g. planner and controller delay time, battery level).
 
-Other main part of software architucture consists of finite state machine for having a better 
+Other main part of software architucture consists of finite state machine which is based on `smach <http://wiki.ros.org/smach>`_ for having a better 
 overview of process states and transitions among them and `aRMOR <https://github.com/EmaroLab/armor>`_ 
 for using the ontology of topogical map for controling the robot in ROS.
 
