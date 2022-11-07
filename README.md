@@ -94,7 +94,16 @@ The node graph is represented in the following figure.
 This package is based on [aRMOR](https://github.com/EmaroLab/armor) it has to be installed as it is described
 in the provided link as a pre-condition for running this package.
 
-Here is the instruction for installing the package:
+It is also depended on [smach](http://wiki.ros.org/smach), it can be installed using the following commands:
+
+```bashscript
+$ sudo apt-get install ros-<distro>-executive-smach*
+```
+```bashscript
+$ sudo apt-get install ros-<distro>-smach-viewer
+```
+
+Once the dependencies are met, the package can be installed as it follows:
 
 ```bashscript
 $ mkdir -p catkin_ws/src
