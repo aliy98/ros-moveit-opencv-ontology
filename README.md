@@ -6,7 +6,7 @@ environment with multiple rooms and a mobile robot. You can get to know more abo
 [documentation](https://aliy98.github.io/ontological-robot-control/) provided for this rospackage.
 
 <p align="center">
-<img src="https://github.com/aliy98/ontological-robot-control/blob/master/docs/diagrams/topological_map.png" width="300" title="topological map">
+<img src="https://github.com/aliy98/ontological-robot-control/blob/master/docs/diagrams/topological_map.jpg" width="300" title="topological map">
 </p>
 
 The robot start in the E location and waits until it receives the information to build the
@@ -89,6 +89,12 @@ The node graph is represented in the following figure.
 <img src="https://github.com/aliy98/ontological-robot-control/blob/master/docs/diagrams/rosgraph.png" width="820" title="node grapg">
 </p>
 
+### Temporal Diagram (UML Sequence Diagram)
+
+<p align="center">
+<img src="https://github.com/aliy98/ontological-robot-control/blob/master/docs/diagrams/sequence_diagram.png" width="820" title="node grapg">
+</p>
+
 ## Usage
 ### Installation
 This package is based on [aRMOR](https://github.com/EmaroLab/armor) it has to be installed as it is described
@@ -140,4 +146,13 @@ Here is the result of launching this package:
 <img src="https://github.com/aliy98/ontological-robot-control/blob/master/docs/diagrams/result.gif" title="result">
 </p>
 
+## Working Hypothesis and Environment
+1. System's Features
+2. System's Limitations
+3. Possible Technical Improvements
+
+## Authors and Contacts
+Ali Yousefi
+
+email: aliyousefi98@outlook.com 
 
