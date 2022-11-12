@@ -14,7 +14,7 @@ Introduction
 This package is an experiment to use a topogical map ontology for controling a robot in ROS through
 aRMOR service. The ontology consists of an indoor environment with multiple rooms and a mobile robot.
 
-.. image:: diagrams/topological_map.png
+.. image:: diagrams/topological_map.jpg
   :width: 300
   :align: center
   :alt: topological_map
