@@ -90,6 +90,10 @@ The node graph is represented in the following figure.
 </p>
 
 ### Temporal Diagram (UML Sequence Diagram)
+The following figure represents the UML sequence diagram of this package. In the initial state, user launches the nodes, causing some of them
+to get some rosparams such as ``environment_size`` and ``initial_pose``. Then, in each loop cycle, ``armor_service`` which is implemented inside
+``finite_state_machine`` node, gets the current robot pose from ``robot-state`` node and updates the ontology, then the target room will be sent to the ``planner_client`` through ``/target_point`` topic and also the state of gets changed considering the target room. ``Planner`` tries to find the path and 
+sends it to the ``planner_client`` as ``PlanResult``. Finally the ``controller_client`` node subscribes the ``/path`` topic and sends it as ``ControlGoal`` to the ``controller`` node so that it can move the robot by setting the robot pose through ``/state/set_pose`` service and the cycles goes on again.
 
 <p align="center">
 <img src="https://github.com/aliy98/ontological-robot-control/blob/master/docs/diagrams/sequence_diagram.png" width="820" title="node grapg">
@@ -146,13 +150,24 @@ Here is the result of launching this package:
 <img src="https://github.com/aliy98/ontological-robot-control/blob/master/docs/diagrams/result.gif" title="result">
 </p>
 
+The above gif shows the overview of launching this package, as it can be seen in the finite state machine the robot starts from room "E", and 
+considering the initial last visit times defined in the ontology, the first target room is "R1". When it reaches the target room the next one 
+is "R3" and the "R4" but before reaching "R4" the battery level gets below the threshold "7" and causes the robot to go first to room "E" and then 
+"R4", and so on.
+
 ## Working Hypothesis and Environment
-1. System's Features
-2. System's Limitations
-3. Possible Technical Improvements
+
+1. System's Features: The topological map is considered to be in size 10x10. Each time when a room is chosen as a target room from the ontology, the corresponding point will be sent to the planner as ``PlanGoal``
+
+<p align="center">
+<img src="https://github.com/aliy98/ontological-robot-control/blob/master/docs/diagrams/topological_map_grid.jpg" width="300" title="node grapg">
+</p>
+
+2. System's Limitations: The planner is the main limitation in this rospackage, because it only considers the starting and target point. The battery level is also a limitation in the robot behaviour, causing it to select the charging room "E" over the target room resulted from the last visit times.
+
+3. Possible Technical Improvements: The planner node could be improved in such a way that it considers the walls more precisely. The battery level could also implemented in a more realistic way.
 
 ## Authors and Contacts
-Ali Yousefi
-
-email: aliyousefi98@outlook.com 
+- Ali Yousefi
+- email: aliyousefi98@outlook.com 
 
