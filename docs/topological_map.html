@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Topological Map Helper Script &mdash; ros-moveit-opencv-ontology 1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Finite State Machine Node" href="finite_state_machine.html" />
+    <link rel="prev" title="Scripts" href="scripts.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> ros-moveit-opencv-ontology
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="simulation_environment.html">Simulation Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="software_architecture.html">Software Architucture</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="scripts.html">Scripts</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Topological Map Helper Script</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#utilities.ontological_robot_control.topological_map.TopologicalMap"><code class="docutils literal notranslate"><span class="pre">TopologicalMap</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#utilities.ontological_robot_control.topological_map.TopologicalMap.add_door"><code class="docutils literal notranslate"><span class="pre">TopologicalMap.add_door()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#utilities.ontological_robot_control.topological_map.TopologicalMap.add_last_visit_time"><code class="docutils literal notranslate"><span class="pre">TopologicalMap.add_last_visit_time()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#utilities.ontological_robot_control.topological_map.TopologicalMap.add_robot"><code class="docutils literal notranslate"><span class="pre">TopologicalMap.add_robot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#utilities.ontological_robot_control.topological_map.TopologicalMap.add_room"><code class="docutils literal notranslate"><span class="pre">TopologicalMap.add_room()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#utilities.ontological_robot_control.topological_map.TopologicalMap.assign_doors_to_room"><code class="docutils literal notranslate"><span class="pre">TopologicalMap.assign_doors_to_room()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#utilities.ontological_robot_control.topological_map.TopologicalMap.cut_dataprop"><code class="docutils literal notranslate"><span class="pre">TopologicalMap.cut_dataprop()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#utilities.ontological_robot_control.topological_map.TopologicalMap.cut_dataprop_list"><code class="docutils literal notranslate"><span class="pre">TopologicalMap.cut_dataprop_list()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#utilities.ontological_robot_control.topological_map.TopologicalMap.cut_objprop"><code class="docutils literal notranslate"><span class="pre">TopologicalMap.cut_objprop()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#utilities.ontological_robot_control.topological_map.TopologicalMap.cut_objprop_list"><code class="docutils literal notranslate"><span class="pre">TopologicalMap.cut_objprop_list()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#utilities.ontological_robot_control.topological_map.TopologicalMap.disjoint_individuals"><code class="docutils literal notranslate"><span class="pre">TopologicalMap.disjoint_individuals()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#utilities.ontological_robot_control.topological_map.TopologicalMap.get_battery_level"><code class="docutils literal notranslate"><span class="pre">TopologicalMap.get_battery_level()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#utilities.ontological_robot_control.topological_map.TopologicalMap.get_location"><code class="docutils literal notranslate"><span class="pre">TopologicalMap.get_location()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#utilities.ontological_robot_control.topological_map.TopologicalMap.get_pose"><code class="docutils literal notranslate"><span class="pre">TopologicalMap.get_pose()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#utilities.ontological_robot_control.topological_map.TopologicalMap.update_ontology"><code class="docutils literal notranslate"><span class="pre">TopologicalMap.update_ontology()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="finite_state_machine.html">Finite State Machine Node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="robot_states.html">Robot States Script</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src_files.html">Source Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ros-moveit-opencv-ontology</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="scripts.html">Scripts</a> &raquo;</li>
+      <li>Topological Map Helper Script</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/topological_map.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-utilities.ontological_robot_control.topological_map">
+<span id="topological-map-helper-script"></span><h1>Topological Map Helper Script<a class="headerlink" href="#module-utilities.ontological_robot_control.topological_map" title="Permalink to this heading"></a></h1>
+<span class="target" id="module-topological_map"></span><dl>
+<dt>Uses Service:</dt><dd><p>/state/get_battery_level</p>
+<p>/state/get_pose</p>
+</dd>
+<dt>Uses helper script:</dt><dd><p>/utilities/armor_api/armor_client.py</p>
+</dd>
+</dl>
+<p>Defines the topological map using the <code class="docutils literal notranslate"><span class="pre">armor_client.py</span></code> helper script methods and the
+ontology file <code class="docutils literal notranslate"><span class="pre">topological_map.owl</span></code>, which is not complete (only contatins class definitions)</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="utilities.ontological_robot_control.topological_map.TopologicalMap">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utilities.ontological_robot_control.topological_map.</span></span><span class="sig-name descname"><span class="pre">TopologicalMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_tag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utilities/ontological_robot_control/topological_map.html#TopologicalMap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utilities.ontological_robot_control.topological_map.TopologicalMap" title="Permalink to this definition"></a></dt>
+<dd><p>Class for implemnting the topological map. When an instance is taken from this class,
+it loads the ontology file using <code class="docutils literal notranslate"><span class="pre">armor_client</span></code> loading method and tries to complete it by
+adding rooms, doors and robot individuals, disjointing them, predefining the last visit
+times and placing the robot to room “E” by calling the corresponding functions which use
+<code class="docutils literal notranslate"><span class="pre">armor_client</span></code> methods.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="utilities.ontological_robot_control.topological_map.TopologicalMap.add_door">
+<span class="sig-name descname"><span class="pre">add_door</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">door</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utilities/ontological_robot_control/topological_map.html#TopologicalMap.add_door"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utilities.ontological_robot_control.topological_map.TopologicalMap.add_door" title="Permalink to this definition"></a></dt>
+<dd><p>Adds door to the topological map using <code class="docutils literal notranslate"><span class="pre">armor_client</span></code>
+add individual to class method and finaly syncs the reasoner</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>door</strong> (<em>string</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="utilities.ontological_robot_control.topological_map.TopologicalMap.add_last_visit_time">
+<span class="sig-name descname"><span class="pre">add_last_visit_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">room</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">visit_time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utilities/ontological_robot_control/topological_map.html#TopologicalMap.add_last_visit_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utilities.ontological_robot_control.topological_map.TopologicalMap.add_last_visit_time" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the initial last visit times using <code class="docutils literal notranslate"><span class="pre">armor_client</span></code> add data to individual
+method and finally syncs the reasoner</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>room</strong> (<em>string</em>) – </p></li>
+<li><p><strong>visit_time</strong> (<em>string</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="utilities.ontological_robot_control.topological_map.TopologicalMap.add_robot">
+<span class="sig-name descname"><span class="pre">add_robot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utilities/ontological_robot_control/topological_map.html#TopologicalMap.add_robot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utilities.ontological_robot_control.topological_map.TopologicalMap.add_robot" title="Permalink to this definition"></a></dt>
+<dd><p>Places the robot in room “E” and sets its initial time instance and battery level
+and defines its urgency and battery threshold using <code class="docutils literal notranslate"><span class="pre">armor_client</span></code> add data  and
+object to individual methods and finally syncs the reasoner</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="utilities.ontological_robot_control.topological_map.TopologicalMap.add_room">
+<span class="sig-name descname"><span class="pre">add_room</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">room</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utilities/ontological_robot_control/topological_map.html#TopologicalMap.add_room"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utilities.ontological_robot_control.topological_map.TopologicalMap.add_room" title="Permalink to this definition"></a></dt>
+<dd><p>Adds room to the topological map using <code class="docutils literal notranslate"><span class="pre">armor_client</span></code>
+add individual to class method and finaly syncs the reasoner</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>room</strong> (<em>string</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="utilities.ontological_robot_control.topological_map.TopologicalMap.assign_doors_to_room">
+<span class="sig-name descname"><span class="pre">assign_doors_to_room</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">room</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doors</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utilities/ontological_robot_control/topological_map.html#TopologicalMap.assign_doors_to_room"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utilities.ontological_robot_control.topological_map.TopologicalMap.assign_doors_to_room" title="Permalink to this definition"></a></dt>
+<dd><p>Assigns the doors to the corresponding room using <code class="docutils literal notranslate"><span class="pre">armor_client</span></code> add object to individual
+method and finally syncs the reasoner</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>room</strong> (<em>string</em>) – </p></li>
+<li><p><strong>doors</strong><strong>[</strong><strong>]</strong> (<em>string</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="utilities.ontological_robot_control.topological_map.TopologicalMap.cut_dataprop">
+<span class="sig-name descname"><span class="pre">cut_dataprop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_prop</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utilities/ontological_robot_control/topological_map.html#TopologicalMap.cut_dataprop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utilities.ontological_robot_control.topological_map.TopologicalMap.cut_dataprop" title="Permalink to this definition"></a></dt>
+<dd><p>Cuts the data property from a string received from armor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data_prop</strong> (<em>string</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="utilities.ontological_robot_control.topological_map.TopologicalMap.cut_dataprop_list">
+<span class="sig-name descname"><span class="pre">cut_dataprop_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_prop_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utilities/ontological_robot_control/topological_map.html#TopologicalMap.cut_dataprop_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utilities.ontological_robot_control.topological_map.TopologicalMap.cut_dataprop_list" title="Permalink to this definition"></a></dt>
+<dd><p>Cuts the data property from a list of strings received from armor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data_prop_list</strong> (<em>string</em><em>[</em><em>]</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="utilities.ontological_robot_control.topological_map.TopologicalMap.cut_objprop">
+<span class="sig-name descname"><span class="pre">cut_objprop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj_prop</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utilities/ontological_robot_control/topological_map.html#TopologicalMap.cut_objprop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utilities.ontological_robot_control.topological_map.TopologicalMap.cut_objprop" title="Permalink to this definition"></a></dt>
+<dd><p>Cuts the object property from a string received from armor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>obj_prop</strong> (<em>string</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="utilities.ontological_robot_control.topological_map.TopologicalMap.cut_objprop_list">
+<span class="sig-name descname"><span class="pre">cut_objprop_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj_prop_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utilities/ontological_robot_control/topological_map.html#TopologicalMap.cut_objprop_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utilities.ontological_robot_control.topological_map.TopologicalMap.cut_objprop_list" title="Permalink to this definition"></a></dt>
+<dd><p>Cuts the object property from a list of strings received from armor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>obj_prop_list</strong> (<em>string</em><em>[</em><em>]</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="utilities.ontological_robot_control.topological_map.TopologicalMap.disjoint_individuals">
+<span class="sig-name descname"><span class="pre">disjoint_individuals</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utilities/ontological_robot_control/topological_map.html#TopologicalMap.disjoint_individuals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utilities.ontological_robot_control.topological_map.TopologicalMap.disjoint_individuals" title="Permalink to this definition"></a></dt>
+<dd><p>Disjoints every individual in each class using <code class="docutils literal notranslate"><span class="pre">armor_client</span></code> disjoint
+individuals of class method and finally syncs the reasoner</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="utilities.ontological_robot_control.topological_map.TopologicalMap.get_battery_level">
+<span class="sig-name descname"><span class="pre">get_battery_level</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utilities/ontological_robot_control/topological_map.html#TopologicalMap.get_battery_level"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utilities.ontological_robot_control.topological_map.TopologicalMap.get_battery_level" title="Permalink to this definition"></a></dt>
+<dd><p>Retrieve the current robot battery level by the <code class="docutils literal notranslate"><span class="pre">state/battery_level</span></code> server of the
+<code class="docutils literal notranslate"><span class="pre">robot-state</span></code> node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>battery_level(int)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="utilities.ontological_robot_control.topological_map.TopologicalMap.get_location">
+<span class="sig-name descname"><span class="pre">get_location</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utilities/ontological_robot_control/topological_map.html#TopologicalMap.get_location"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utilities.ontological_robot_control.topological_map.TopologicalMap.get_location" title="Permalink to this definition"></a></dt>
+<dd><p>Detects robot current position using <code class="docutils literal notranslate"><span class="pre">get_pose()</span></code> function and then checks in which room
+it is, considering the <code class="docutils literal notranslate"><span class="pre">assignment_world.world</span></code> file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>is_in(string)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="utilities.ontological_robot_control.topological_map.TopologicalMap.get_pose">
+<span class="sig-name descname"><span class="pre">get_pose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utilities/ontological_robot_control/topological_map.html#TopologicalMap.get_pose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utilities.ontological_robot_control.topological_map.TopologicalMap.get_pose" title="Permalink to this definition"></a></dt>
+<dd><p>Retrieve the current robot pose by the <code class="docutils literal notranslate"><span class="pre">state/get_pose</span></code> server of the
+<code class="docutils literal notranslate"><span class="pre">robot-state</span></code> node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>pose(Point)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="utilities.ontological_robot_control.topological_map.TopologicalMap.update_ontology">
+<span class="sig-name descname"><span class="pre">update_ontology</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">now</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utilities/ontological_robot_control/topological_map.html#TopologicalMap.update_ontology"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utilities.ontological_robot_control.topological_map.TopologicalMap.update_ontology" title="Permalink to this definition"></a></dt>
+<dd><p>The function which is called in <code class="docutils literal notranslate"><span class="pre">finite_state_machine</span></code> node, it gets current time instance as
+an argument, it gets robot current location using <code class="docutils literal notranslate"><span class="pre">get_location()</span></code> function, it gets robot current battery
+level using <code class="docutils literal notranslate"><span class="pre">get_battery_level()</span></code> function, and updates them in the ontology. It sorts the last visit
+times and detects which room is the most behind and sets it as the target room. It detects the urgent rooms
+considering the last visit times and robot urgeny threshold and updates them in the ontology, finally, it
+returns the target room as it is found.If the battery level is high enough otherwise it returns room “E” as
+target room, and battery level state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>now</strong> (<em>float32</em>) – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>target_room(string)
+battery_low(bool)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="scripts.html" class="btn btn-neutral float-left" title="Scripts" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="finite_state_machine.html" class="btn btn-neutral float-right" title="Finite State Machine Node" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Ali Yousefi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
