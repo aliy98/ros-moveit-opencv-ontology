@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Robot States Script &mdash; ros-moveit-opencv-ontology 1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Source Files" href="src_files.html" />
+    <link rel="prev" title="Finite State Machine Node" href="finite_state_machine.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> ros-moveit-opencv-ontology
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="simulation_environment.html">Simulation Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="software_architecture.html">Software Architucture</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="scripts.html">Scripts</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="topological_map.html">Topological Map Helper Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="finite_state_machine.html">Finite State Machine Node</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Robot States Script</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#scripts.robot_states.RobotState"><code class="docutils literal notranslate"><span class="pre">RobotState</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.robot_states.RobotState.get_base_movement_state"><code class="docutils literal notranslate"><span class="pre">RobotState.get_base_movement_state()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.robot_states.RobotState.get_battery_level"><code class="docutils literal notranslate"><span class="pre">RobotState.get_battery_level()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.robot_states.RobotState.get_pose"><code class="docutils literal notranslate"><span class="pre">RobotState.get_pose()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.robot_states.RobotState.odom_callback"><code class="docutils literal notranslate"><span class="pre">RobotState.odom_callback()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.robot_states.RobotState.set_base_movement_state"><code class="docutils literal notranslate"><span class="pre">RobotState.set_base_movement_state()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.robot_states.RobotState.set_battery_level"><code class="docutils literal notranslate"><span class="pre">RobotState.set_battery_level()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src_files.html">Source Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ros-moveit-opencv-ontology</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="scripts.html">Scripts</a> &raquo;</li>
+      <li>Robot States Script</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/robot_states.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-scripts.robot_states">
+<span id="robot-states-script"></span><h1>Robot States Script<a class="headerlink" href="#module-scripts.robot_states" title="Permalink to this heading"></a></h1>
+<span class="target" id="module-robot_states"></span><dl>
+<dt>Subscribes to:</dt><dd><p>/odom</p>
+</dd>
+<dt>Uses Service:</dt><dd><p>/state/set_battery_level</p>
+<p>/state/get_battery_level</p>
+<p>/state/get_pose</p>
+<p>/state/set_base_movement_state</p>
+<p>/state/get_base_movement_state</p>
+</dd>
+</dl>
+<p>This node defines battery level, robot pose and robot base movement state in order to be used by other
+nodes in the software architecture.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="scripts.robot_states.RobotState">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scripts.robot_states.</span></span><span class="sig-name descname"><span class="pre">RobotState</span></span><a class="reference internal" href="_modules/scripts/robot_states.html#RobotState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.robot_states.RobotState" title="Permalink to this definition"></a></dt>
+<dd><p>Inits <code class="docutils literal notranslate"><span class="pre">robot-states</span></code> node to provide some usefull information about robot current state, such as
+pose, battery level and base movement state</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.robot_states.RobotState.get_base_movement_state">
+<span class="sig-name descname"><span class="pre">get_base_movement_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/robot_states.html#RobotState.get_base_movement_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.robot_states.RobotState.get_base_movement_state" title="Permalink to this definition"></a></dt>
+<dd><p>The <cite>state/get_base_movement_state</cite> service implementation.
+The <cite>request</cite> input parameter is given by the client as empty. Thus, it is not used.
+The <cite>response</cite> returned to the client contains the current robot base movement state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>request</strong> (<em>GetBaseMovementStateRequest</em>) – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>response(GetBaseMovementStateResponse)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.robot_states.RobotState.get_battery_level">
+<span class="sig-name descname"><span class="pre">get_battery_level</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/robot_states.html#RobotState.get_battery_level"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.robot_states.RobotState.get_battery_level" title="Permalink to this definition"></a></dt>
+<dd><p>The <cite>state/get_battery_level</cite> service implementation.
+The <cite>request</cite> input parameter is given by the client as empty. Thus, it is not used.
+The <cite>response</cite> returned to the client contains the current robot battery level.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>request</strong> (<em>GetBatteryLevelRequest</em>) – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>response(GetBatteryLevelResponse)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.robot_states.RobotState.get_pose">
+<span class="sig-name descname"><span class="pre">get_pose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/robot_states.html#RobotState.get_pose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.robot_states.RobotState.get_pose" title="Permalink to this definition"></a></dt>
+<dd><p>The <cite>state/get_pose</cite> service implementation.
+The <cite>request</cite> input parameter is given by the client as empty. Thus, it is not used.
+The <cite>response</cite> returned to the client contains the current robot pose.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>request</strong> (<em>GetPoseRequest</em>) – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>response(GetPoseResponse)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.robot_states.RobotState.odom_callback">
+<span class="sig-name descname"><span class="pre">odom_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/robot_states.html#RobotState.odom_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.robot_states.RobotState.odom_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Callback function for <code class="docutils literal notranslate"><span class="pre">/odom</span></code> topic subscriber, update robot current pose in <code class="docutils literal notranslate"><span class="pre">robot-states</span></code>
+node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>nav_msgs.msg.Odometry</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.robot_states.RobotState.set_base_movement_state">
+<span class="sig-name descname"><span class="pre">set_base_movement_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/robot_states.html#RobotState.set_base_movement_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.robot_states.RobotState.set_base_movement_state" title="Permalink to this definition"></a></dt>
+<dd><p>The <cite>state/set_base_movement_state</cite> service implementation.
+The <cite>request</cite> input parameter is the current robot base movement state to be set,
+as given by the client. This server returns an empty <cite>response</cite>.</p>
+<dl class="simple">
+<dt>Arg:</dt><dd><p>request(SetBaseMovementStateRequest)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.robot_states.RobotState.set_battery_level">
+<span class="sig-name descname"><span class="pre">set_battery_level</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/robot_states.html#RobotState.set_battery_level"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.robot_states.RobotState.set_battery_level" title="Permalink to this definition"></a></dt>
+<dd><p>The <cite>state/set_battery_level</cite> service implementation.
+The <cite>request</cite> input parameter is the current robot battery level to be set,
+as given by the client. This server returns an empty <cite>response</cite>.</p>
+<dl class="simple">
+<dt>Arg:</dt><dd><p>request(SetBatteryLevelRequest)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="finite_state_machine.html" class="btn btn-neutral float-left" title="Finite State Machine Node" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="src_files.html" class="btn btn-neutral float-right" title="Source Files" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Ali Yousefi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

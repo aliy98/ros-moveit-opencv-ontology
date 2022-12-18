@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Finite State Machine Node &mdash; ros-moveit-opencv-ontology 1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Robot States Script" href="robot_states.html" />
+    <link rel="prev" title="Topological Map Helper Script" href="topological_map.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> ros-moveit-opencv-ontology
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="simulation_environment.html">Simulation Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="software_architecture.html">Software Architucture</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="scripts.html">Scripts</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="topological_map.html">Topological Map Helper Script</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Finite State Machine Node</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#scripts.finite_state_machine.BuildSemanticMap"><code class="docutils literal notranslate"><span class="pre">BuildSemanticMap</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.finite_state_machine.BuildSemanticMap.execute"><code class="docutils literal notranslate"><span class="pre">BuildSemanticMap.execute()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#scripts.finite_state_machine.ExploreRoom"><code class="docutils literal notranslate"><span class="pre">ExploreRoom</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.finite_state_machine.ExploreRoom.execute"><code class="docutils literal notranslate"><span class="pre">ExploreRoom.execute()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#scripts.finite_state_machine.MoveToCharger"><code class="docutils literal notranslate"><span class="pre">MoveToCharger</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.finite_state_machine.MoveToCharger.execute"><code class="docutils literal notranslate"><span class="pre">MoveToCharger.execute()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#scripts.finite_state_machine.MoveToTargetRoom"><code class="docutils literal notranslate"><span class="pre">MoveToTargetRoom</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.finite_state_machine.MoveToTargetRoom.execute"><code class="docutils literal notranslate"><span class="pre">MoveToTargetRoom.execute()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#scripts.finite_state_machine.Recharging"><code class="docutils literal notranslate"><span class="pre">Recharging</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scripts.finite_state_machine.Recharging.execute"><code class="docutils literal notranslate"><span class="pre">Recharging.execute()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#scripts.finite_state_machine.check_target_reached"><code class="docutils literal notranslate"><span class="pre">check_target_reached()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#scripts.finite_state_machine.get_room_info"><code class="docutils literal notranslate"><span class="pre">get_room_info()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#scripts.finite_state_machine.get_room_pose"><code class="docutils literal notranslate"><span class="pre">get_room_pose()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#scripts.finite_state_machine.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#scripts.finite_state_machine.marker_id_callback"><code class="docutils literal notranslate"><span class="pre">marker_id_callback()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#scripts.finite_state_machine.move_to_pose"><code class="docutils literal notranslate"><span class="pre">move_to_pose()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#scripts.finite_state_machine.set_arm_movement_state"><code class="docutils literal notranslate"><span class="pre">set_arm_movement_state()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#scripts.finite_state_machine.set_base_movement_state"><code class="docutils literal notranslate"><span class="pre">set_base_movement_state()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#scripts.finite_state_machine.set_battery_level"><code class="docutils literal notranslate"><span class="pre">set_battery_level()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="robot_states.html">Robot States Script</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src_files.html">Source Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ros-moveit-opencv-ontology</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="scripts.html">Scripts</a> &raquo;</li>
+      <li>Finite State Machine Node</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/finite_state_machine.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-scripts.finite_state_machine">
+<span id="finite-state-machine-node"></span><h1>Finite State Machine Node<a class="headerlink" href="#module-scripts.finite_state_machine" title="Permalink to this heading"></a></h1>
+<span class="target" id="module-finite_state_machine"></span><dl>
+<dt>Subscribes to:</dt><dd><p>/image_id</p>
+</dd>
+<dt>Uses Service:</dt><dd><p>/state/set_battery_level</p>
+<p>/state/get_pose</p>
+<p>/state/set_base_movement_state</p>
+<p>/room_info</p>
+<p>/move_arm</p>
+</dd>
+<dt>Uses Action:</dt><dd><p>/move_base</p>
+</dd>
+<dt>Uses helper script:</dt><dd><p>/utilities/ontological_robot_control/topological_map.py</p>
+</dd>
+</dl>
+<p>Defines the states and transitions for the finite state machine of this rospackage. In the initial state
+robot builds the semantic map of environment using image id of the markers detected by robot camera. This node
+uses <code class="docutils literal notranslate"><span class="pre">topological_map.py</span></code> helper script to update the ontology while the process is running, and retreives
+the target room based on last visit times and robot battey state. In the next state it moves to the target room
+and if battery level gets lower than threshold, it goes to charger, and charges the battery.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="scripts.finite_state_machine.BuildSemanticMap">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scripts.finite_state_machine.</span></span><span class="sig-name descname"><span class="pre">BuildSemanticMap</span></span><a class="reference internal" href="_modules/scripts/finite_state_machine.html#BuildSemanticMap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.finite_state_machine.BuildSemanticMap" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the initial state when robot builds the semantic map.It enables the robot arm to start moving on the desired
+trajectories as it is defined in <code class="docutils literal notranslate"><span class="pre">my_moveit.cpp</span></code> file using <code class="docutils literal notranslate"><span class="pre">set_arm_movement_state(arm_movement_state)</span></code>
+function, and then checks if the number of detected room ids are enough, then exits from state by returning <code class="docutils literal notranslate"><span class="pre">map_ready</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.finite_state_machine.BuildSemanticMap.execute">
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userdata</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/finite_state_machine.html#BuildSemanticMap.execute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.finite_state_machine.BuildSemanticMap.execute" title="Permalink to this definition"></a></dt>
+<dd><p>Implements the execution of the tasks while this state gets active.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="scripts.finite_state_machine.ExploreRoom">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scripts.finite_state_machine.</span></span><span class="sig-name descname"><span class="pre">ExploreRoom</span></span><a class="reference internal" href="_modules/scripts/finite_state_machine.html#ExploreRoom"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.finite_state_machine.ExploreRoom" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the state when robot has reached the target room and then explores it. It enables robot arm movement
+like the initial state using <code class="docutils literal notranslate"><span class="pre">set_arm_movement_state(arm_movement_state)</span></code> functinon, then returns <code class="docutils literal notranslate"><span class="pre">room_explored</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.finite_state_machine.ExploreRoom.execute">
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userdata</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/finite_state_machine.html#ExploreRoom.execute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.finite_state_machine.ExploreRoom.execute" title="Permalink to this definition"></a></dt>
+<dd><p>Implements the execution of the tasks while this state gets active.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="scripts.finite_state_machine.MoveToCharger">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scripts.finite_state_machine.</span></span><span class="sig-name descname"><span class="pre">MoveToCharger</span></span><a class="reference internal" href="_modules/scripts/finite_state_machine.html#MoveToCharger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.finite_state_machine.MoveToCharger" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the state when battery level is low and moves to charger, first enables battery consumption
+using <code class="docutils literal notranslate"><span class="pre">set_base_movement_state(movement_state)</span></code> function and then moves to charger using
+<code class="docutils literal notranslate"><span class="pre">move_to_pose(pose)</span></code> function. Additionally, it updates the ontology while it moves to charger
+using <code class="docutils literal notranslate"><span class="pre">update_ontology(now)</span></code> function, until it reaches the charger.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.finite_state_machine.MoveToCharger.execute">
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userdata</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/finite_state_machine.html#MoveToCharger.execute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.finite_state_machine.MoveToCharger.execute" title="Permalink to this definition"></a></dt>
+<dd><p>Implements the execution of the tasks while this state gets active.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="scripts.finite_state_machine.MoveToTargetRoom">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scripts.finite_state_machine.</span></span><span class="sig-name descname"><span class="pre">MoveToTargetRoom</span></span><a class="reference internal" href="_modules/scripts/finite_state_machine.html#MoveToTargetRoom"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.finite_state_machine.MoveToTargetRoom" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the state when robot moves to target room found by the ontology, first enables battery consumption
+using <code class="docutils literal notranslate"><span class="pre">set_base_movement_state(base_movement_state)</span></code> function and then moves to target room using
+<code class="docutils literal notranslate"><span class="pre">move_to_pose(pose)</span></code> function. Additionally, it updates the ontology while it moves to target room
+using <code class="docutils literal notranslate"><span class="pre">update_ontology(now)</span></code> function, until it reaches the target room, then exits the state by
+returning <code class="docutils literal notranslate"><span class="pre">target_reached</span></code>. If the battery level gets lower than threshold, it returns <code class="docutils literal notranslate"><span class="pre">battery_low</span></code>
+and target room will be canceled.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.finite_state_machine.MoveToTargetRoom.execute">
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userdata</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/finite_state_machine.html#MoveToTargetRoom.execute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.finite_state_machine.MoveToTargetRoom.execute" title="Permalink to this definition"></a></dt>
+<dd><p>Implements the execution of the tasks while this state gets active.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="scripts.finite_state_machine.Recharging">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scripts.finite_state_machine.</span></span><span class="sig-name descname"><span class="pre">Recharging</span></span><a class="reference internal" href="_modules/scripts/finite_state_machine.html#Recharging"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.finite_state_machine.Recharging" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the state when robot has reached the charger and chargers battery after some time using
+<code class="docutils literal notranslate"><span class="pre">set_battery_level(battery_level)</span></code> function and then returns <code class="docutils literal notranslate"><span class="pre">robot_charged</span></code> transition.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="scripts.finite_state_machine.Recharging.execute">
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userdata</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/finite_state_machine.html#Recharging.execute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.finite_state_machine.Recharging.execute" title="Permalink to this definition"></a></dt>
+<dd><p>Implements the execution of the tasks while this state gets active.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scripts.finite_state_machine.check_target_reached">
+<span class="sig-prename descclassname"><span class="pre">scripts.finite_state_machine.</span></span><span class="sig-name descname"><span class="pre">check_target_reached</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_pose</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/finite_state_machine.html#check_target_reached"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.finite_state_machine.check_target_reached" title="Permalink to this definition"></a></dt>
+<dd><p>Checks if the robot has reached to a specific point by computing the eucledian distance between
+robot current pose and target pose</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>target_pose</strong> (<em>Point</em>) – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>target_reached(Bool)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scripts.finite_state_machine.get_room_info">
+<span class="sig-prename descclassname"><span class="pre">scripts.finite_state_machine.</span></span><span class="sig-name descname"><span class="pre">get_room_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">room_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/finite_state_machine.html#get_room_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.finite_state_machine.get_room_info" title="Permalink to this definition"></a></dt>
+<dd><p>Server client for <code class="docutils literal notranslate"><span class="pre">marker_server</span></code>, gets information for each room using <code class="docutils literal notranslate"><span class="pre">room_info</span></code> service</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>room_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>resp(RoomInformationResponse)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scripts.finite_state_machine.get_room_pose">
+<span class="sig-prename descclassname"><span class="pre">scripts.finite_state_machine.</span></span><span class="sig-name descname"><span class="pre">get_room_pose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">room</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/finite_state_machine.html#get_room_pose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.finite_state_machine.get_room_pose" title="Permalink to this definition"></a></dt>
+<dd><p>Detects the center postion by using the room information for corresponding room</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>room</strong> (<em>string</em>) – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>room_pose(Point)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scripts.finite_state_machine.main">
+<span class="sig-prename descclassname"><span class="pre">scripts.finite_state_machine.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/finite_state_machine.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.finite_state_machine.main" title="Permalink to this definition"></a></dt>
+<dd><p>The main function for finite_state_machine node, initialises the node and takes an instance of
+<code class="docutils literal notranslate"><span class="pre">TopologicalMap</span></code> class in the time instance now, defines the subscriner to the <code class="docutils literal notranslate"><span class="pre">/image_id</span></code> topic
+, defines the states and transitions of the finite state machine for topological map and finally
+starts the finite state machine process</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scripts.finite_state_machine.marker_id_callback">
+<span class="sig-prename descclassname"><span class="pre">scripts.finite_state_machine.</span></span><span class="sig-name descname"><span class="pre">marker_id_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/finite_state_machine.html#marker_id_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.finite_state_machine.marker_id_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Callback function for <code class="docutils literal notranslate"><span class="pre">/image_id</span></code> topic subscriber. Eveytime an image id is detected, checks
+if image id is valuable and not already available, then saves the corresponding information of
+each room in the global variables by calling <code class="docutils literal notranslate"><span class="pre">get_room_info(room_id)</span></code> function, and modifies
+the ontology using <code class="docutils literal notranslate"><span class="pre">add_room(room)</span></code>, <code class="docutils literal notranslate"><span class="pre">add_door(door)</span></code>, <code class="docutils literal notranslate"><span class="pre">assign_doors_to_room(room,</span> <span class="pre">doors)</span></code>
+<code class="docutils literal notranslate"><span class="pre">disjoint_individuals()</span></code> and <code class="docutils literal notranslate"><span class="pre">add_last_visit_time(room,</span> <span class="pre">visit_time)</span></code> functions from
+<code class="docutils literal notranslate"><span class="pre">topological_map.py</span></code> helper script.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>int32</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scripts.finite_state_machine.move_to_pose">
+<span class="sig-prename descclassname"><span class="pre">scripts.finite_state_machine.</span></span><span class="sig-name descname"><span class="pre">move_to_pose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pose</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/finite_state_machine.html#move_to_pose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.finite_state_machine.move_to_pose" title="Permalink to this definition"></a></dt>
+<dd><p>Action client function for <code class="docutils literal notranslate"><span class="pre">move_base</span></code> node, gets a pose as an argument and sends it as
+<code class="docutils literal notranslate"><span class="pre">MoveBaseGoal.msg</span></code> to the action server</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pose</strong> (<em>Point</em>) – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>result(MoveBaseResult.msg)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scripts.finite_state_machine.set_arm_movement_state">
+<span class="sig-prename descclassname"><span class="pre">scripts.finite_state_machine.</span></span><span class="sig-name descname"><span class="pre">set_arm_movement_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arm_movement_state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/finite_state_machine.html#set_arm_movement_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.finite_state_machine.set_arm_movement_state" title="Permalink to this definition"></a></dt>
+<dd><p>Service client function for <code class="docutils literal notranslate"><span class="pre">/move_arm</span></code>. Updates the current robot arm movement state stored
+in <code class="docutils literal notranslate"><span class="pre">my_moveit</span></code> node</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>arm_movement_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scripts.finite_state_machine.set_base_movement_state">
+<span class="sig-prename descclassname"><span class="pre">scripts.finite_state_machine.</span></span><span class="sig-name descname"><span class="pre">set_base_movement_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_movement_state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/finite_state_machine.html#set_base_movement_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.finite_state_machine.set_base_movement_state" title="Permalink to this definition"></a></dt>
+<dd><p>Service client function for <code class="docutils literal notranslate"><span class="pre">/base_movement_state</span></code>. Updates the current robot base movement state stored
+in <code class="docutils literal notranslate"><span class="pre">robot-states</span></code> node</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>base_movement_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scripts.finite_state_machine.set_battery_level">
+<span class="sig-prename descclassname"><span class="pre">scripts.finite_state_machine.</span></span><span class="sig-name descname"><span class="pre">set_battery_level</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">battery_level</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/finite_state_machine.html#set_battery_level"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.finite_state_machine.set_battery_level" title="Permalink to this definition"></a></dt>
+<dd><p>Service client function for <code class="docutils literal notranslate"><span class="pre">/state/set_battery_level</span></code> Update the current robot battery level
+stored in the <code class="docutils literal notranslate"><span class="pre">robot-state</span></code> node</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>battery_level</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="topological_map.html" class="btn btn-neutral float-left" title="Topological Map Helper Script" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="robot_states.html" class="btn btn-neutral float-right" title="Robot States Script" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Ali Yousefi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
