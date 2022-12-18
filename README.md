@@ -179,7 +179,7 @@ When it reaches the target, the state will change to explore room:
 While the robot moves to target, if the battery gets lower than threshold, it will move to charger:
 
 <p align="center">
-<img src="https://github.com/aliy98/ros-moveit-opencv-ontology/blob/master/docs/diagrams/move_to_charger.gif title="move_to_charger">
+<img src="https://github.com/aliy98/ros-moveit-opencv-ontology/blob/master/docs/diagrams/move_to_charger.gif" title="move_to_charger">
 </p>
 
 ## Working Hypothesis and Environment
