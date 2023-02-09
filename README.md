@@ -6,7 +6,7 @@ environment with multiple rooms and a mobile robot. You can get to know more abo
 [documentation](https://aliy98.github.io/ontological-robot-control/) provided for this rospackage.
 
 <p align="center">
-<img src="https://github.com/aliy98/ontological-robot-control/blob/master/docs/diagrams/topological_map.jpg" width="300" title="topological map">
+<img src="https://github.com/aliy98/ros-moveit-opencv-ontology/blob/ontological-robot-control/docs/_images/topological_map.jpg" width="300" title="topological map">
 </p>
 
 The robot start in the E location and waits until it receives the information to build the
@@ -34,7 +34,7 @@ for using the ontology of topogical map for controling the robot in ROS.
 The software architucture is represented in the following figure.
 
 <p align="center">
-<img src="https://github.com/aliy98/ontological-robot-control/blob/master/docs/diagrams/sofar.png" width="620" title="sofar">
+<img src="https://github.com/aliy98/ros-moveit-opencv-ontology/blob/ontological-robot-control/docs/_images/sofar.png" width="620" title="sofar">
 </p>
 
 The components of this software architucture can be described as follows:
@@ -86,7 +86,7 @@ retreives the target room based on last visit times, finaly sends the target roo
 The node graph is represented in the following figure.
 
 <p align="center">
-<img src="https://github.com/aliy98/ontological-robot-control/blob/master/docs/diagrams/rosgraph.png" width="820" title="node grapg">
+<img src="https://github.com/aliy98/ros-moveit-opencv-ontology/blob/ontological-robot-control/docs/_images/rosgraph.png" width="820" title="node grapg">
 </p>
 
 ### Temporal Diagram (UML Sequence Diagram)
@@ -96,7 +96,7 @@ to get some rosparams such as ``environment_size`` and ``initial_pose``. Then, i
 sends it to the ``planner_client`` as ``PlanResult``. Finally the ``controller_client`` node subscribes the ``/path`` topic and sends it as ``ControlGoal`` to the ``controller`` node so that it can move the robot by setting the robot pose through ``/state/set_pose`` service and the cycles goes on again.
 
 <p align="center">
-<img src="https://github.com/aliy98/ontological-robot-control/blob/master/docs/diagrams/sequence_diagram.png" width="820" title="node grapg">
+<img src="https://github.com/aliy98/ros-moveit-opencv-ontology/blob/ontological-robot-control/docs/diagrams/sequence_diagram.png" width="820" title="node grapg">
 </p>
 
 ## Usage
@@ -147,7 +147,7 @@ $ roslaunch ontological_robot_control topological_map.launch
 Here is the result of launching this package:
 
 <p align="center">
-<img src="https://github.com/aliy98/ontological-robot-control/blob/master/docs/diagrams/result.gif" title="result">
+<img src="https://github.com/aliy98/ros-moveit-opencv-ontology/blob/ontological-robot-control/docs/diagrams/result.gif" title="result">
 </p>
 
 The above gif shows the overview of launching this package, as it can be seen in the finite state machine the robot starts from room "E", and 
@@ -160,7 +160,7 @@ is "R3" and the "R4" but before reaching "R4" the battery level gets below the t
 1. System's Features: The topological map is considered to be in size 10x10. Each time when a room is chosen as a target room from the ontology, the corresponding point will be sent to the planner as ``PlanGoal``
 
 <p align="center">
-<img src="https://github.com/aliy98/ontological-robot-control/blob/master/docs/diagrams/topological_map_grid.jpg" width="300" title="node grapg">
+<img src="https://github.com/aliy98/ros-moveit-opencv-ontology/blob/ontological-robot-control/docs/diagrams/result.gif" width="300" title="node grapg">
 </p>
 
 2. System's Limitations: The planner is the main limitation in this rospackage, because it only considers the starting and target point. The battery level is also a limitation in the robot behaviour, causing it to select the charging room "E" over the target room resulted from the last visit times.
