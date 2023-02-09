@@ -160,7 +160,7 @@ is "R3" and the "R4" but before reaching "R4" the battery level gets below the t
 1. System's Features: The topological map is considered to be in size 10x10. Each time when a room is chosen as a target room from the ontology, the corresponding point will be sent to the planner as ``PlanGoal``
 
 <p align="center">
-<img src="https://github.com/aliy98/ros-moveit-opencv-ontology/blob/ontological-robot-control/docs/diagrams/result.gif" width="300" title="node grapg">
+<img src="https://github.com/aliy98/ros-moveit-opencv-ontology/blob/ontological-robot-control/docs/diagrams/topological_map_grid.jpg" width="300" title="node grapg">
 </p>
 
 2. System's Limitations: The planner is the main limitation in this rospackage, because it only considers the starting and target point. The battery level is also a limitation in the robot behaviour, causing it to select the charging room "E" over the target room resulted from the last visit times.
